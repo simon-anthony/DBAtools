@@ -1,0 +1,67 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH racp 1 "05 Jun 2001" ""
+.SH NAME
+racp \- show databases with SGeRAC Toolkit package configured
+.SH SYNOPSIS
+\f3racp\f1
+[\f3-s \f2sid\f1]
+.SH DESCRIPTION
+.IX "racp"
+.P
+\f3racp\f1 displays the package name associated with \f2sid\f1 if
+\f3-s\f1 is used, otherwise it lists all databases for which a 
+SGeRAC Toolkit package is configured.
+.SH OPTIONS
+.TP 10
+\f3\-s \f2sid\f1
+Specify the name of the database.
+.SH RETURN VALUE
+\f3racp\f1 exits with one of the following values:
+.RS
+.TP
+\f31\f1
+If the \f3-s\f1 option is used and no configuration is found.
+.TP
+\f30\f1
+Otherwise.
+.RE
+.SH EXAMPLES
+Display the databases for which a SGeRAC package is configured:
+.nf
+.sp
+\f5$ \f7racp\f5
+TIGGER
+KANGA
+ROO
+PIGLET
+.fi
+.P
+Display the package name for the database KANGA:
+.nf
+.sp
+\f5$ \f7racp -s KANGA\f5
+racp-kanga
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH FILES
+.TP 30
+\f5/etc/cmcluster/*/oc.conf\f1
+Configuration file for OC Toolkit
+.TP 30
+\f5/etc/cmcluster/*/rac_dbi.conf\f1
+Configuration file for RAC Toolkit
+.SH SEE ALSO
+.BR cmmakepkg (1)
+.TP 30
+\f5/opt/cmcluster/SGeRAC/toolkit/README\f1
+Toolkit documentation.

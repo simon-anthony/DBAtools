@@ -1,0 +1,52 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH adpasswd 1 "05 Jun 2001" ""
+.SH NAME
+adpasswd \- retrieve password for 12.2 E-Business
+.SH SYNOPSIS
+\f3adpasswd\f1
+\f1[\f3-a\f1|\f3-w\f1] [\f3-u\f1] \f3-s \f2s_systemname\f1 
+.SH DESCRIPTION
+.IX "adpasswd"
+.P
+\f3adpasswd\f1 retrieves the password for the E-Business Suite FND or
+WebLogic administrative user. These are typically "apps" and "weblogic",
+respectively.
+.SH OPTIONS
+.TP
+\f3\-s \f2s_systemname\f1
+Specify the name of the E-Business system.
+.TP
+\f3\-a\f1
+Return the password for the E-Business database user. This is the default
+behaviour if neither \f3-a\f1 or \f3-w\f1 is specified.
+.TP
+\f3\-w\f1
+Return the password for the WebLogic user. 
+.TP
+\f3\-u\f1
+Return the name of the user for the specified service rather than the password.
+.SH EXAMPLES
+Run adpasswd for FOO:
+.nf
+.sp
+\f5$ \f7adpasswd -s FOO\f5
+hello1234
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH FILES
+.TP 20
+\f2DOMAIN_HOME\f1\f5/config/jdbc/EBSDataSource-[0-9]*-jdbc.xml\f1
+WebLogic XML configuration file
+.TP 20
+\f2DOMAIN_HOME\f1\f5/servers/AdminServer/security/boot.properties\f1
+Weblogic encrypted passwords file

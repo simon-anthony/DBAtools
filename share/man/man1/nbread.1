@@ -1,0 +1,75 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH nbread 1 "05 Jun 2001" ""
+.SH NAME
+nbread \- read a line (non-blocking) from standard input
+.SH SYNOPSIS
+\f3nbread\f1
+[\f3-t \f2timout\f1]
+.SH DESCRIPTION
+.IX "nbread"
+.P
+\f3nbread\f1 reads a single line from standard input.  If no input is
+available after \f2timout\f1 seconds (default 10) \f3nbread\f1 quits with
+a non-zero return code.
+.P
+Upon successful read the input is written to standard output.
+.SH OPTIONS
+.TP
+\f3\-t \f2timeout\f1
+The value of \f2timeout\f1 is the time in seconds to wait for input to appear.
+.SH RETURN VALUE
+Unless input is read withing the timeout, \f3nbread\f1 returns non-zero.
+.SH EXAMPLES
+.P
+The following shell script, \f5getunpw\f1, could be used to retrieve a user name and password:
+.nf
+.sp
+.ft 5
+	if username=`nbread`
+	then
+		print Username is $username
+		if password=`nbread`
+		then
+			print Password is $password; exit 0
+		else
+			print -u2 no password; exit 1
+		fi
+	fi
+
+	print -u2 no username and password; exit 1
+.ft 1
+.sp
+.fi
+.P
+Then, invocation can be as follows:
+.nf
+.sp
+.ft 5
+	{ echo scott; echo tiger; } | getunpw
+	username is "scott"
+	password is "tiger"
+.ft 1
+.sp
+.fi
+.P
+When a value is not supplied on standard input:
+.nf
+.sp
+.ft 5
+	{ echo scott; } | getunpw
+	username is "scott"
+	no password
+.sp
+.ft 1
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)

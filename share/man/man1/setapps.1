@@ -1,0 +1,37 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH setapps 1 "21 Apr 2007" ""
+.SH NAME
+setapps \- set environment for database access
+.SH SYNOPSIS
+\f3FPATH=BASEDIR/share/lib/functions export FPATH\f1
+.sp
+\f3setapps\f1 [\f3-s \f2s_systemname\f1] [\f3run\f1|\f3patch\f1]
+.SH DESCRIPTION
+.IX "setapps"
+.sp
+.P
+\f3setapps\f1 
+locates and sources the environment file for the E-Business Suite system
+identified by \f2s_systemname\f1. For Release 12.2 systems this can be either for the
+\f3run\f1 (the default) or \f3patch\f1 instances. 
+.P
+.SH OPTIONS
+.TP
+\f3-s \f2s_systemname\f1
+Use the value of \f2s_systemname\f1 to search for context file that is used to locate
+the environment script. If not set, an attempt is made to guess its value from
+the current user name.
+.SH AUTHOR
+Simon Anthony(santhony@me.com)
+.SH SEE ALSO
+.BR ctx (1),
+.BR ctxvar (1)

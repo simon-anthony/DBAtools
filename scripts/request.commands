@@ -1,0 +1,14 @@
+#!/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running request script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+# Cannot set SW_LOCATION from a request script
+msg STAR "Enter software location: "
+read SW_LOCATION
+echo SW_LOCATION=$SW_LOCATION > ${SW_CONTROL_DIRECTORY}response
+
+exit 0

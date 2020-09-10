@@ -1,0 +1,28 @@
+#/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running checkinstall script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+#if [ -r ${SW_CONTROL_DIRECTORY}/response ] 
+#then
+#	printf "%-8s %s\n" NOTE: "Repsonse file found"
+#else
+#	printf "%-8s %s\n" ERROR: "Repsonse file not found" >&2
+#	exit 1
+#fi
+#echo SW_ROOT_DIRECTORY ${SW_ROOT_DIRECTORY}
+#echo SW_LOCATION ${SW_LOCATION}
+#echo SW_SESSION_OPTIONS $SW_SESSION_OPTIONS
+#cat $SW_SESSION_OPTIONS
+
+#if [ $SW_LOCATION = / ]
+#then
+#	msg ERROR "Installation in \"/\" NOT allowed.  \
+#		Choose a location such as \"/opt\"." 
+#	exit 1
+#fi
+#if [ ${SW_ROOT_DIRECTORY}${SW_LOCATION} ]
+exit 0

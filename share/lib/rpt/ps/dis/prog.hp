@@ -1,0 +1,148 @@
+#!/bin/sh -
+#ident $Header$
+
+PATH=/bin:/usr/bin:/opt/oracle/bin export PATH
+
+prog=`basename \`dirname $0\``
+usage="[-p] [-u|-b]"
+
+filter="cat -"
+
+while getopts pub opt 2>&-
+do
+	case $opt in
+	p)	pflg=y				# use ps(1) rather than PID file
+		;;
+	u|b)
+		uflg=y				# use 'ptree' style output
+		;;
+	\?)	errflg=y
+	esac
+done
+shift `expr $OPTIND - 1`
+
+[ $errflg ] && { echo usage: $prog $usage >&2; exit 2; }
+[ $UTIL_DIR ] || { echo $prog: UTIL_DIR not set >&2; exit 1; }
+
+script=ad${prog}ctl
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi 
+
+if [ "$ID" ]
+then
+	id=$ID
+else
+	id=`expr "\`id\`" : '[^(]\{1,\}(\([^ ]\{1,\}\))'` 
+fi
+
+# ptreefmt:
+#   Input: 'ps -H -o pid,args'               Output: 'ptree'
+#   ^12345 xxxx                              ^12345 xxxx
+#   ^ 2345 abc                               ^   2345 abc
+#   ^ 3456   xyz                             ^   3456 xyz
+#   ^ 4356   uvw                             ^   4356 uvw
+#   ^ 4776     abc                           ^     4776 abc
+ptreefmt() {
+	awk '
+	{
+		match($0, /^[ ]*[0-9]+[ ]+/)
+
+		if (RLENGTH == 6) {	# root parent
+			print 
+			next
+		}
+		indent = (RLENGTH - 6)/2
+		printf("%s%5d %s\n", pad(indent), $1, substr($0, RLENGTH+1))
+
+	}
+	function pad(n,  b) {
+		b =  ""
+		for (i = 0; i < n; i++) 
+			b = b "  "
+		return b
+	}'
+}
+
+if [ $uflg ]
+then
+	filter=ptreefmt
+fi
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi
+
+if appctx=`getctx -as $ORACLE_SID 2>&-`
+then
+	eval `ctxvar -ifv s_weboh_oh $appctx`
+fi
+
+# Locate the Middleware home
+n=0
+for registry in `ls $s_weboh_oh/../*/domain-registry.xml 2>&-`
+do
+	MW_HOME=`dirname \`realpath $registry\``
+	home=`sed -n 's;.*location="\(.*\)/user_projects/.*;\1;p' $registry`
+
+	if [ "A$MW_HOME" = "A$home" ]	# if not a match: invalid or copied installation
+	then
+		(( n += 1 ))
+	fi
+done
+
+if [ "A$MW_HOME" = "A" ]
+then
+	# it may have not been configured
+	if wl_home=`ls -d $s_weboh_oh/../*/wlserver* 2>&-`
+	then
+		MW_HOME=`dirname \`realpath ${wl_home%% *}\``
+		echo "Configuration file: "
+	elif as_home=`ls -d $s_weboh_oh/../*/discoverer 2>&-`	# otherwise 10gAS
+	then
+		MW_HOME=`dirname \`realpath ${as_home%% *}\``
+		echo "Configuration file: $MW_HOME/discoverer/config/configuration.xml"
+	else
+		exit 1
+	fi
+else
+	domain_home=$MW_HOME/user_projects/domains/ClassicDomain
+	jcversion=`sed -n '/<cache-configuration/ { s;.* version="\([^"]\{1,\}\)".*;\1;p; q; }' \
+		$domain_home/config/fmwconfig/servers/WLS_DISCO/javacache.xml`
+	discoconfdir=$domain_home/config/fmwconfig/servers/WLS_DISCO/applications/discoverer_$jcversion/configuration
+	echo "Configuration file: $discoconfdir/configuration.xml"
+fi
+export MW_HOME
+if [ -r $MW_HOME/staticports.ini ]
+then
+	echo "Configured ports: "
+	sed -n '/^[A-Z]/ {
+		s; = ;=;;
+		s; ;;g
+		s;=\([^ ]\{1,\}\);='$CAP'\1'$CAPOFF';
+		p; }' $MW_HOME/staticports.ini |
+	while read var
+	do
+		echo " $var"
+	done
+fi
+
+echo "Processes:"
+
+for pid in `/opt/oracle/bin/pgrep -fu $id -P1 "$MW_HOME"`
+do
+	[ "$pid" ] && UNIX95=1 ps -Hxu $id -o pid,args | sed -n '
+	/^ *'$pid' / {
+		p; n;
+		: loop
+		/^ *[0-9]\{1,\}   */ {
+			p; n;
+			b loop
+		}
+	}' | $filter
+done

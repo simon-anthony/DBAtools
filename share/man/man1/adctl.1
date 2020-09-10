@@ -1,0 +1,116 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH adctl 1 "05 Jun 2001" ""
+.SH NAME
+adctl \- run an AD process script
+.SH SYNOPSIS
+\f3adctl\f1
+[\f3-s \f2s_systemname\f1] [\f3-p\f1|\f3-c\f1|\f3-r\f1] [\f3-n\f1] [\f3-f\f1] \f2script\f1 [\f2args\f1...]
+.sp
+\f3adctl\f1
+[\f3-s \f2s_systemname\f1] \f3-l\f1 [\f3-l\f1|\f3-e\f1|\f3-u\f1]
+.SH DESCRIPTION
+.IX "adctl"
+.P
+\f3adctl\f1 locates the AutoConfig generated script file(s) for starting or
+stopping services for \f2script\f1 and supplies any arguments given as
+\f2args\f1...
+.P
+Only scripts whose \f3process status\f1 (\f3service status\f1 in Release 12) is "enabled"
+will be executed, unless the \f3-f\f1 flag is supplied.
+.P
+\f2script\f1 can be any shell pattern that matches a unique name for a script.
+Preference is given to \f2name\f1s that match:
+.RS
+.P
+\f5ad\f2name\f1\f5ctl.sh\f1
+.RE
+.P
+After that, other matches are considered.
+.SH OPTIONS
+.TP
+\f3\-s \f2s_systemname\f1
+Specify the name of the eBusiness system.
+.TP
+\f3\-p\f1
+Append the \f5apps\f1 user's name and password to \f2args\f1..., as determined
+from 
+.BR getappspass (1).
+.TP
+\f3\-c\f1
+Append the \f5operator\f1 user's name and password to \f2args\f1..., as determined
+from 
+.BR adcpusr (1).
+.TP
+\f3\-r\f1
+Perform non-blocking reads on standard input of first the (apps or operator)
+username and then the password. Append the username and password to
+\f2args\f1...
+.TP
+\f3\-n\f1
+Do not execute the script (if found) just print the output.
+.TP
+\f3\-f\f1
+Force execution of scripts that are "disabled".
+.TP
+\f3\-l\f1
+List the available scripts (irrespective of their being "enabled").
+Repeat for "long" listing.
+.TP
+\f3\-e\f1
+Show the enabled status of the scripts from the context file.
+.TP
+\f3\-u\f1
+Show the usage message from the script, if any.
+.SH EXAMPLES
+.P
+Print the command to start the Apache service:
+.nf
+.sp
+\f5$ \f7adctl -s SID -n apc stop\f5
+/u??/app/SID/comn/admin/scripts/CONTEXT_NAME/adapcctl.sh stop
+.fi
+.P
+Show enabled status listing:
+.nf
+.sp
+\f5$ \f7adctl -s SID -l -e\f5
+  Oracle Apache Server CONTEXT_NAME              adapcctl.sh
+  Oracle Restricted Apache Server CONTEXT_NAME   adaprstctl.sh  Disabled
+  Oracle Apache Server CONTEXT_NAME for PL/SQL   adapcctl.sh    Disabled
+  OracleTNSListener80APPS_CONTEXT_NAME           adalnctl.sh
+  Oracle TCF SocketServer CONTEXT_NAME           adtcfctl.sh    Disabled
+  OracleConcMgrCONTEXT_NAME                      adcmctl.sh     Disabled
+  OracleFormsServer-Forms60CONTEXT_NAME          adfrmctl.sh
+  OracleReportServer-Rep60_SID                   adrepctl.sh    Disabled
+  Oracle Metrics Client CONTEXT_NAME             adfmcctl.sh
+  Oracle Metrics Server CONTEXT_NAME             adfmsctl.sh
+  Oracle ICSM CONTEXT_NAME                       ieoicsm.sh     Disabled
+  Oracle Fulfillment Server CONTEXT_NAME         jtffmctl.sh
+  Oracle iProcurement Bulk Loader CONTEXT_NAME   icxblkctl.sh   Disabled
+  Oracle Discoverer services CONTEXT_NAME        addisctl.sh
+  Oracle MWA Service CONTEXT_NAME                mwactlwrpr.sh  Disabled
+.fi
+.P
+Force the command to start the MWA service to be executed even though it is
+disabled in the context file:
+.nf
+.sp
+\f5$ \f7adctl -s SID -f mwac start\f5
+/u??/app/SID/comn/admin/scripts/CONTEXT_NAME/mwactlwrpr.sh start
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR adcpusr (1),
+.BR adsvcctl (1M),
+.BR getappspass (1),
+.BR nbread (1)

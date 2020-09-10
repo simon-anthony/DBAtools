@@ -1,0 +1,51 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH suboavars 1 "21 Apr 2007" ""
+.SH NAME
+suboavars \- substitute context variables in file
+.SH SYNOPSIS
+\f3FPATH=BASEDIR/share/lib/functions export FPATH\f1
+.sp
+\f3suboavars\f1 [\f3-d\f1|\f3-t\f1] [\f3-v \f2var\f3=\f2val\f1...] \f3-f \f2contextfile\f1 [\f2file\f1]
+.SH DESCRIPTION
+.IX "suboavars"
+.sp
+.P
+\f3suboavars\f1 
+substitutes context variables for their respective values from
+\f2contextfile\f1 in the file named \f2file\f1 or standard input if not
+specified.
+.P
+The result is written to standard output.
+.SH OPTIONS
+.TP
+\f3-d\f1
+Denotes that the file \f2file\f1, or stdin, has context variables denoted in "driver"
+file form:
+.IP 
+<s_variable>
+.TP
+\f3-t\f1
+Denotes that the file \f2file\f1, or stdin, has context variables denoted in "template"
+file form:
+.IP
+%s_variable%
+.IP
+This is the default behaviour.
+.TP
+\f3-v\f1 \f2var\f3=\f2val\f1
+The setting for the context variable named \f2var\f1 is superseded by
+\f2val\f1.
+.TP
+\f3-f\f1 \f2contextfile\f1
+The context file.
+.SH AUTHOR
+Simon Anthony(santhony@me.com)

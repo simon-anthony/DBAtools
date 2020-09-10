@@ -1,0 +1,43 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH ckres 1 "05 Jun 2001" ""
+.SH NAME
+ckres \- checked for ckresolved libraries in a.out
+.SH SYNOPSIS
+\f3ckres\f1
+[\f3-q\f1] [\f3-s\f1] [\f3-n\f1]
+.SH DESCRIPTION
+.IX "ckres"
+.P
+\f3ckres\f1 checks an a.out file for ckresolved library references, either
+dynamic or embedded.
+.SH OPTIONS
+.TP
+\f3\-q\f1
+(Quiet) Do not write anything to the standard output, regardless of
+finding missing dependencies.
+.TP
+\f3\-s\f1
+Error messages produced for nonexistent or unreadable files are suppressed.
+.TP
+\f3\-n\f1
+Do not reset \f5SHLIB_PATH\f1 or \f5LD_LIBRARY_PATH\f1.
+.SH EXAMPLES
+Display any missing dependencies for the file myfile:
+.nf
+.sp
+\f5$ \f7ckres myfile\f5
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR chatr (1),
+.BR ldd (1)

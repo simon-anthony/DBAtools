@@ -1,0 +1,54 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH ptree 1 "21 Apr 2007" ""
+.SH NAME
+ptree \- prints the process tree hierarchy
+.SH SYNOPSIS
+\f3ptree\f1 [\f3-s\f1|\f3-h\f1] 
+\f2pid\f1|\f2username\f1...
+.SH DESCRIPTION
+.IX "ptree"
+.P
+\f3ptree\f1 prints the process tree of all processes that match the specified
+arguments.
+While printing the tree, the child processes are indented to the right from
+their respective parent processes.
+.P
+.SS Options
+.TP
+\f3-s\f1
+Prints the process tree starting from children of \f3swapper\f1 (usually
+process 0).
+.TP
+\f3-h\f1
+Hides processes owned by root in the user hierarchy.
+.SS Operands
+.TP 10
+\f3pid\f1
+Print the process tree for the process ID number specified by \f3pid\f1.
+.TP 10
+\f3username\f1
+Print the process tree for all the processes from the user by \f3username\f1.
+Note that only the username (and not user ID) can be specified in this
+instance.
+.SH NOTES
+This is an implementation for HP-UX 11.11/11.23 or AIX7.2. HP-UX 11.31 has \f3ptree\f1
+natively.
+.P 
+The default option for all processes (when no arguments are specified) is not
+implemented.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR pgrep (1),
+.BR pkill (1),
+.BR ps (1),
+.BR pstat (2)

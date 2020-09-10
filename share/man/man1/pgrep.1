@@ -1,0 +1,128 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH pgrep 1 "21 Apr 2007" ""
+.SH NAME
+pgrep, pkill \- search or kill processes based on process name and attributes
+.SH SYNOPSIS
+.HP
+\f3pgrep\f1 [\f3-flvx\f1] [\f3-n\f1|\f3-o\f1] [\f3-d \f2dlim\f1] [\f3-g \f2pgrplist\f1] [\f3-G \f2grouplist\f1] [\f3-P \f2ppidlist\f1] [\f3-s \f2sidlist\f1] [\f3-S \f2statelist\f1] [\f3-t \f2termlist\f1] [\f3-u \f2userlist\f1] [\f3-U \f2ruserlist\f1] [\f2pattern\f1]
+.HP
+\f3pkill\f1 \f1[\f3-signal\f1] [\f3-fvx\f1] [\f3-n\f1|\f3-o\f1] [\f3-d \f2dlim\f1] [\f3-g \f2pgrplist\f1] [\f3-G \f2grouplist\f1] [\f3-P \f2ppidlist\f1] [\f3-s \f2sidlist\f1] [\f3-S \f2statelist\f1] [\f3-t \f2termlist\f1] [\f3-u \f2userlist\f1] [\f3-U \f2ruserlist\f1] [\f2pattern\f1]
+.SH DESCRIPTION
+.IX "pgrep"
+.P
+\f3pgrep\f1 searches for processes having attributes matching the selection
+criteria specified by its arguments.
+The process ID numbers of the macthed processes are printed, separated by a delimiter, the default being the
+newline.
+Each atrribute option can take multiple values separated by a comma.
+\f3pgrep\f1 will select those processes that match all the options specified.
+If an attribute option has multiple values, then the process needs to match
+one of the values.
+.P
+For example:
+.RS
+.sp
+\f5pgrep -u root,daemon -G sys,daemon\f1
+.RE
+.P
+matches processes having effective user ID (\f5root\f1 OR \f5daemon\f1) AND 
+real group ID (\f5sys\f1 OR \f5daemon\f1).
+.P
+\f3pkill\f1 selects processes similar to \f3pgrep\f1, but instead of printing
+the process ID numbers, it signals the matched processes.
+The user can specify the signal to be sent to the matched process as the first argument
+to \f3pkill\f1.
+By default, \f7SIGTERM\f1 is assumed.
+.SH OPTIONS
+.TP
+\f3-signal\f1
+Specifies the signal to be sent to each matched process (\f3pkill\f1 only). 
+If no signal is specified, \f7SIGTERM\f1 is sent by default.
+The value of signal follows the same syntax as that of the \f3kill\f1 command; see
+.BR kill (1).
+This option, if specified, should be the first argument to \f3pkill\f1.
+.TP
+\f3-d \f2dlim\f1
+Specifies the delimiter to be used while printing the matched entries
+(\f3prgep\f1) only. 
+The default delimiter is a newline.
+.TP
+\f3-f\f1
+Perform pattern mnatching on the entire command line rather than the command
+name.
+.TP
+\f3-G \f2grouplist\f1
+Select processes whose real group ID numbers or group names are given in \f2grouplist\f1.
+.TP
+\f3-g \f2pgrplist\f1
+Select processes whose process group ID numbers are given in \f2pgrplist\f1.
+.TP
+\f3-l \f1
+Long listing (\f3prgep\f1) only.
+Print the command name along with the PID,
+If used with the \f3-f\f1 option, the command line argument is printed instead
+of command name.
+.TP
+\f3-n \f1
+Select the most recently created process matching the criteria.
+This option is mutually exclusive with the \f3-o\f1 option.
+.TP
+\f3-n \f1
+Select the oldest process matching the criteria.
+This option is mutually exclusive with the \f3-n\f1 option.
+.TP
+\f3-P \f2ppidlist\f1
+Select processes whose parents whose parent ID process numbers are given in \f2ppidlist\f1.
+.TP
+\f3-s \f2sidlist\f1
+Select processes whose session ID numbers are given in \f2sidlist\f1.
+.TP
+\f3-S \f2statelist\f1
+Select processes whose current state is given in the \f2statelist\f1. The
+values for \f2statelist\f1 can be:
+.RS
+.nf
+.sp
+\f3O\f1	Nonexistent
+\f3A\f1	Active
+\f3I\f1	Idle
+\f3T\f1	Stopped
+\f3Z\f1	Canceled
+\f3W\f1	Swapped
+.ft
+.RE
+.TP
+\f3-U \f2ruserlist\f1
+Select processes whose real user ID numbers or login names are given in \f2ruserlist\f1. 
+.TP
+\f3-u \f2userlist\f1
+Select processes whose effective user ID numbers or login names are given in \f2userlist\f1.
+.TP
+\f3-v\f1
+Reverse selection. 
+Select processes that do not meet the matching criteria.
+.TP
+\f3-x\f1
+Perform an exact match of the pattern string.
+.SS Operands
+.TP
+\f2pattern\f1
+Expression (ERE) pattern to mtch against either the basename for full process
+argument string.
+.SH NOTES
+This is an implementation for HP-UX 11.11/11.23 or AIX 7.2. HP-UX 11.31 has \f3pgrep\f1
+natively.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR ps (1),
+.BR getprocs (2)

@@ -1,0 +1,107 @@
+#!/bin/sh -
+#ident $Header$
+
+PATH=/bin:/usr/bin export PATH
+
+prog=`basename \`dirname $0\``
+usage="[-p] [-u|-b]"
+
+ps="ps -fp"
+cut=48
+
+while getopts pub opt 2>&-
+do
+	case $opt in
+	p)	pflg=y				# use ps(1) rather than PID file
+		;;
+	u|b)
+		if [ -x /usr/ucb/ps ]
+		then
+			ps="/usr/ucb/ps -ww"
+			cut=25
+			uflg=y			# use ps(1B)
+		fi
+		;;
+	\?)	errflg=y
+	esac
+done
+shift `expr $OPTIND - 1`
+
+[ $errflg ] && { echo usage: $prog $usage >&2; exit 2; }
+[ $UTIL_DIR ] || { echo $prog: UTIL_DIR not set >&2; exit 1; }
+
+script=ad${prog}ctl
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\' for \"$ORACLE_SID\"
+	exit 1
+fi
+
+if [ "$ID" ]
+then
+	id=$ID
+else
+	id=`expr "\`id\`" : '[^(]\{1,\}(\([^ ]\{1,\}\))'` 
+fi
+
+ports=`grep -h _PORT= $UTIL_DIR/$script.sh | sort -u |
+	sed 's;^[^A-Z_]*\([A-Z_]\{1,\}\)=\"*\([0-9]\{1,\}\).*;\1=\2;'`
+
+echo Configured ports: `echo $ports | sed 's;=\([^ 	]\{1,\}\);='$CAP'\1'$CAPOFF';g'`
+
+set -a
+eval $ports `sed -n 's;^[ 	]*\(REPSRV_NAME\)=\"*\([^ 	\"]\{1,\}\).*;\1=\2;p' $UTIL_DIR/$script.sh`
+set +a
+
+pids=`pgrep -fu $id "rwmts60 .*name=$REPSRV_NAME"`
+
+echo Processes:
+count=0
+
+for pid in $pids
+do
+	count=`expr $count + 1`
+
+	if [ $pflg ]
+	then
+		if [ $count -gt 1 ]
+		then
+			$ps $pid | sed '1d'
+		else
+			$ps $pid
+		fi
+		continue
+	fi
+
+	if [ $uflg ]
+	then
+		argv=`$ps $pid 2>&- | sed 1d | cut -c$cut-`
+	else
+		unset argv
+	fi
+
+	/usr/proc/bin/ptree $pid | nawk '
+		++count == 1 && $1 != '$pid' {
+			ppid++
+			next
+		}
+		{
+			if (ppid)
+				sub(/^  /, "")
+
+			if (length("'"$argv"'")) {	# replace the ps listing with ps(1B)
+				match($0, /^[ \t]*[0-9]+[ \t]+/)
+
+				if (count > 1) {	# child - argv must change
+					system("'"$ps"' " $1 " | sed 1d | cut -c'$cut'- >/tmp/'$$'")
+					getline child < "/tmp/'$$'"
+					$0 = sprintf("%s%s", substr($0, 1, RLENGTH), child)
+					close "/tmp/'$$'"
+				} else
+					$0 = sprintf("%s%s", substr($0, 1, RLENGTH), "'"$argv"'")
+			}
+
+			print
+		}'
+done

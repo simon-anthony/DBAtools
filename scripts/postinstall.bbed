@@ -1,0 +1,37 @@
+#/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running postinstall script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+SW_LOCATION=/opt/oracle	# we set this since the package was formerly locatable
+
+######
+#
+# bin
+
+files="lnbbed mkbbed"
+for file in $files
+do
+	msg NOTE "Fixing \"$SW_LOCATION/bin/$file\""
+	ex -s ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/bin/$file <<-!
+		g/SW_LOCATION/s;SW_LOCATION;${SW_LOCATION%/};g
+		w!
+	!
+done
+
+if [ "`uname -m`" = "ia64" ]
+then
+	subdir=ia64
+else
+	subdir=pa_risc
+fi
+
+for obj in sbbdpt ssbbded
+do
+	ln -s $SW_LOCATION/lib/$subdir/$obj.o $SW_LOCATION/lib/$obj.o
+done
+
+exit 0

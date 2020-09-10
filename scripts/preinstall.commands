@@ -1,0 +1,12 @@
+#/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running preinstall script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+set -a
+. ${SW_CONTROL_DIRECTORY}/response
+set +a
+exit 0

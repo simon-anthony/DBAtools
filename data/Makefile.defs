@@ -1,0 +1,121 @@
+#ident $Header$
+
+# These are defined for rpm - they might be required for System V or SD-UX
+# packages:
+bindir     = $(PREFIX)/bin
+sbindir    = $(PREFIX)/sbin
+datadir    = $(PREFIX)/share
+sysconfdir = /etc/opt
+libdir     = $(PREFIX)/lib
+includedir = $(PREFIX)/include
+mandir     = $(PREFIX)/man
+
+BASEDIR = $(PREFIX)
+CC      = cc
+
+.SUFFIXES: .sh .sh~ .shell .shell~ .m4 .m4~
+
+.sh~:
+	$(GET) $(GFLAGS) -p $< > $*.sh
+	cp $*.sh $*; chmod 0777 $@
+	@BASEDIR=$(BASEDIR) ;\
+	echo "\tBASEDIR=$$BASEDIR" ;\
+	echo "g/BASEDIR/s;BASEDIR;$$BASEDIR;g" > exscript ;\
+	echo "g/BINDIR/s;BINDIR;$(bindir);g" >> exscript ;\
+	echo "g/SBINDIR/s;SBINDIR;$(sbindir);g" >> exscript ;\
+	echo "g/LIBDIR/s;LIBDIR;$(libdir);g" >> exscript ;\
+	echo "g/DATADIR/s;DATADIR;$(datadir);g" >> exscript ;\
+	echo "g/SYSCONFDIR/s;SYSCONFDIR;$(sysconfdir);g" >> exscript ;\
+	echo "g/PREFIX/s;PREFIX;$(PREFIX);g" >> exscript ;\
+	echo "w! $*" >> exscript 
+	ex -s $* < exscript
+	@rm -f exscript
+	@chmod +x $*
+
+.sh:
+	@BASEDIR=$(BASEDIR) ;\
+	echo "\tBASEDIR=$$BASEDIR" ;\
+	echo "g/BASEDIR/s;BASEDIR;$$BASEDIR;g" > exscript ;\
+	echo "g/SBINDIR/s;SBINDIR;$(sbindir);g" >> exscript ;\
+	echo "g/BINDIR/s;BINDIR;$(bindir);g" >> exscript ;\
+	echo "g/LIBDIR/s;LIBDIR;$(libdir);g" >> exscript ;\
+	echo "g/DATADIR/s;DATADIR;$(datadir);g" >> exscript ;\
+	echo "g/SYSCONFDIR/s;SYSCONFDIR;$(sysconfdir);g" >> exscript ;\
+	echo "g/PREFIX/s;PREFIX;$(PREFIX);g" >> exscript ;\
+	echo "w! $@" >> exscript 
+	ex -s $< < exscript
+	@rm -f exscript
+	@chmod +x $@
+
+.shell~.sh:
+	$(GET) $(GFLAGS) -p $< > $*.shell
+	cp $*.shell $*.sh; chmod 0755 $@
+	@BASEDIR=$(BASEDIR) ;\
+	echo "\tBASEDIR=$$BASEDIR" ;\
+	echo "g/BASEDIR/s;BASEDIR;$$BASEDIR;g" > exscript ;\
+	echo "g/SBINDIR/s;SBINDIR;$(sbindir);g" >> exscript ;\
+	echo "g/BINDIR/s;BINDIR;$(bindir);g" >> exscript ;\
+	echo "g/LIBDIR/s;LIBDIR;$(libdir);g" >> exscript ;\
+	echo "g/DATADIR/s;DATADIR;$(datadir);g" >> exscript ;\
+	echo "g/SYSCONFDIR/s;SYSCONFDIR;$(sysconfdir);g" >> exscript ;\
+	echo "g/PREFIX/s;PREFIX;$(PREFIX);g" >> exscript ;\
+	echo "w! $*.sh" >> exscript 
+	ex -s $*.sh < exscript
+	@rm -f exscript
+
+.shell.sh:
+	@BASEDIR=$(BASEDIR) ;\
+	echo "\tBASEDIR=$$BASEDIR" ;\
+	echo "g/BASEDIR/s;BASEDIR;$$BASEDIR;g" > exscript ;\
+	echo "g/SBINDIR/s;SBINDIR;$(sbindir);g" >> exscript ;\
+	echo "g/BINDIR/s;BINDIR;$(bindir);g" >> exscript ;\
+	echo "g/LIBDIR/s;LIBDIR;$(libdir);g" >> exscript ;\
+	echo "g/DATADIR/s;DATADIR;$(datadir);g" >> exscript ;\
+	echo "g/SYSCONFDIR/s;SYSCONFDIR;$(sysconfdir);g" >> exscript ;\
+	echo "g/PREFIX/s;PREFIX;$(PREFIX);g" >> exscript ;\
+	echo "w! $@" >> exscript 
+	ex -s $< < exscript
+	@rm -f exscript
+
+
+.m4~:
+	$(GET) $(GFLAGS) -p $< > $*.m4 \
+	m4 -DBASEDIR=$(BASEDIR) \
+	-DSBINDIR=$(sbindir) \
+	-DBINDIR=$(bindir) \
+	-DLIBDIR=$(libdir) \
+	-DDATADIR=$(datadir) \
+	-DSYSCONFDIR=$(sysconfdir) \
+	-DPREFIX=$(PREFIX) \
+	$*.m4 > $*
+
+.m4:
+	m4 -DBASEDIR=$(BASEDIR) \
+	-DSBINDIR=$(sbindir) \
+	-DBINDIR=$(bindir) \
+	-DLIBDIR=$(libdir) \
+	-DDATADIR=$(datadir) \
+	-DSYSCONFDIR=$(sysconfdir) \
+	-DPREFIX=$(PREFIX) \
+	$< > $*
+
+.m4~.sh:
+	$(GET) $(GFLAGS) -p $< > $*.m4
+	m4 -DBASEDIR=$(BASEDIR) \
+	-DSBINDIR=$(sbindir) \
+	-DBINDIR=$(bindir) \
+	-DLIBDIR=$(libdir) \
+	-DDATADIR=$(datadir) \
+	-DSYSCONFDIR=$(sysconfdir) \
+	-DPREFIX=$(PREFIX) \
+	$*.m4 > $*.sh
+
+.m4.sh:
+	m4 -DBASEDIR=$(BASEDIR) \
+	-DSBINDIR=$(sbindir) \
+	-DBINDIR=$(bindir) \
+	-DLIBDIR=$(libdir) \
+	-DDATADIR=$(datadir) \
+	-DSYSCONFDIR=$(sysconfdir) \
+	-DPREFIX=$(PREFIX) \
+	$< > $@

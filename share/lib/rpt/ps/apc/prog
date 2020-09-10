@@ -1,0 +1,167 @@
+#!/bin/sh -
+#ident $Header$
+
+PATH=/bin:/usr/bin export PATH
+
+prog=`basename \`dirname $0\``
+usage="[-p] [-u|-b]"
+
+filter="cat -"
+
+while getopts pub opt 2>&-
+do
+	case $opt in
+	p)	pflg=y				# use ps(1) rather than PID file
+		;;
+	u|b)
+		uflg=y				# use 'ptree' style output
+		;;
+	\?)	errflg=y
+	esac
+done
+shift `expr $OPTIND - 1`
+
+[ $errflg ] && { echo usage: $prog $usage >&2; exit 2; }
+[ $UTIL_DIR ] || { echo $prog: UTIL_DIR not set >&2; exit 1; }
+
+script=ad${prog}ctl
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi 
+
+if [ "$ID" ]
+then
+	id=$ID
+else
+	id=`expr "\`id\`" : '[^(]\{1,\}(\([^ ]\{1,\}\))'` 
+fi
+
+# ptreefmt:
+#   Input: 'ps -H -o pid,args'               Output: 'ptree'
+#   ^12345 xxxx                              ^12345 xxxx
+#   ^ 2345 abc                               ^   2345 abc
+#   ^ 3456   xyz                             ^   3456 xyz
+#   ^ 4356   uvw                             ^   4356 uvw
+#   ^ 4776     abc                           ^     4776 abc
+ptreefmt() {
+	awk '
+	{
+		match($0, /^[ ]*[0-9]+[ ]+/)
+
+		if (RLENGTH == 6) {	# root parent
+			print 
+			next
+		}
+		indent = (RLENGTH - 6)/2
+		printf("%s%5d %s\n", pad(indent), $1, substr($0, RLENGTH+1))
+
+	}
+	function pad(n,  b) {
+		b =  ""
+		for (i = 0; i < n; i++) 
+			b = b "  "
+		return b
+	}'
+}
+
+if [ $uflg ]
+then
+	filter=ptreefmt
+fi
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi
+
+APACHE_TOP=`sed -n '/ORAENV_FILE=/ {
+		s;ORAENV_FILE="\(.*\)/[^/]*;\1/Apache;p
+		q
+	}' $UTIL_DIR/$script.sh 2>&-`
+[ $APACHE_TOP ] || {
+	echo WARNING: cannot determine APACHE_TOP. Check $script.sh.
+	exit
+}
+export APACHE_TOP
+
+conf_files=`sed -n 's;^[ 	]*APACHE.*CONF=\([^ ]*\).*;\1;p' $UTIL_DIR/$script.sh`
+[ "$conf_files" ] || conf_files=`sed -n 's;.*apachectl.*-f[	 ]*\([^	 ]\{1,\}\.conf\).*;\1;p' \
+$UTIL_DIR/$script.sh | sort -u`
+
+[ "$conf_files" ] || conf_files=$APACHE_TOP/Apache/conf/httpd.conf
+
+for conf in $conf_files
+do
+	name=`expr "\`basename $conf .conf\`" : '\(.*\)_*.*' | 
+		tr '[a-z]' '[A-Z]'`
+	ports=
+	port=`sed -n 's;^[ 	]*Listen[ 	]\{1,\}\([0-9]\{1,\}\).*;'$name'_PORT=\1;p' $conf;
+		sed -n 's;^[ 	]*Listen[ 	]\{1,\}.*:\([0-9]\{1,\}\).*;'$name'_PORT=\1;p' $conf;
+		sed -n '/^[ 	]*<IfDefine SSL>/,/^[ 	]*<\/IfDefine>/ {
+			s;^[^#]\{0,1\}[ 	]*Listen[ 	]\{1,\}\([^ ]\{1,\}\);'$name'_PORT=\1;p
+			s;^[^#]\{0,1\}[ 	]*Listen[ 	]\{1,\}.*:\([^ ]\{1,\}\);'$name'_PORT=\1;p
+			}' $conf`
+	[ "$port" ] || continue
+	[ "$ports" ] && ports="$ports $port" || ports="$port"
+
+	echo Configuration file: $conf
+
+	if [ `basename $conf .conf` = httpd ]
+	then
+		includes=`sed -n  's;^[	 ]*include[	 ]\{1,\}"\(.*\)".*;\1;p' $conf`
+
+		for include in $includes 
+		do
+			name=`expr "\`basename $include .conf\`" : '\(.*\)_*.*' | 
+				tr '[a-z]' '[A-Z]'`
+			if [ "$name" = JSERV ]
+			then
+				include=`sed -n \
+					'/<IfDefine !RESTRICT>/,/<\/IfDefine>/ {
+						s;^[ 	]*ApJServProperties[ 	]\{1,\}\(.*\);\1;p
+					 }' \
+					$include`
+				port=`sed -n 's;^port=\([-	 0-9]\{1,\}\).*;'$name'_PORT=\1;p' \
+					$include`
+			else
+				port=`sed -n \
+					's;^[ 	]*Listen[	 ]\{1,\}\([0-9]\{1,\}\).*;'$name'_PORT=\1;p' \
+					$include`
+			fi
+			[ "$port" ] && ports="$ports $port"
+		done
+	fi
+
+	echo Configured ports: `echo $ports | sed 's;=\([^ 	]\{1,\}\);='$CAP'\1'$CAPOFF';g'`
+
+	set -a
+	eval $ports
+	set +a
+
+	echo Processes:
+	count=0
+
+	pidfile=`sed -n 's;^PidFile[ 	]\{1,\}\(.*\);\1;p' $conf`
+
+	if [ -n "$pidfile" -a ! "$pflg" -a -r "$pidfile" ]
+	then
+		pid=`cat -s $pidfile`
+	else
+		pid=`ps -xu $id | awk '/Apache\/bin\/'$httpd'.*'\`basename $conf\`'/ { print $1; exit }'`
+	fi
+	
+	[ "$pid" ] && UNIX95=1 ps -Hxu $id -o pid,args | sed -n '
+	/^ *'$pid' / {
+		p; n;
+		: loop
+		/^ *[0-9]\{1,\}   */ {
+			p; n;
+			b loop
+		}
+	}' | $filter
+done
+

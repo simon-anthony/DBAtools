@@ -1,0 +1,69 @@
+# rwtop(1) searches for directory paths which match a known shell pattern.
+# For example, in the instance where the value for s_systemname is "TST":
+#
+#  /u[0-9][0-9]/oracle/tstcomn
+#
+# This is used to generate the path for the directory being examined for
+# the directory type in question.
+#
+# The variable ${s_systemname} and ${s_systemname_lower} can be used in these
+# patterns to represent, respectively, the value for s_systemname  in
+# upper and lower case. Shell parameter substituion rules apply to this
+# variable.
+#
+# Additionally, the keyword {ctx} can also be use to refer to the
+# "context name" of the installation. The context name (in Korn shell
+# notation) is usually ${s_systemname}_$(hostname). In searching for
+# possible paths all possible candidate contexts are generated and
+# evaluated since the system may be known by multiple names (network
+# interfaces) and the name of the host used by the context might not
+# necessarily be the one set by hostname. Shell parameter substition is
+# not performed on this keyword.
+#
+# For example, using the previous pattern - the search for COMMON_TOP for
+# s_systemname  would be:
+#
+#  /u[0-9][0-9]/oracle/${s_systemname_lower}comn
+#
+# It is an error, since it is an invalid RapidWiz configuration, if
+# multiple matches are returned.
+#
+#COMMON_TOP /[du][0-9][0-9]/oracle/${s_systemname_lower}comn
+#ORA_TOP    /[du][0-9][0-9]/oracle/${s_systemname_lower}ora
+#DB_TOP     /[du][0-9][0-9]/oracle/${s_systemname_lower}db
+#APPL_TOP   /[du][0-9][0-9]/oracle/${s_systemname_lower}appl
+#INST_TOP   /[du][0-9][0-9]/oracle/${s_systemname_lower}inst
+#ARCH_TOP   /[du][0-9][0-9]/oracle/${s_systemname_lower}arch
+#DATA_TOPS  /[du][0-9][0-9]/oracle/${s_systemname_lower}data
+#
+#COMMON_TOP /[du][0-9][0-9]/app/${s_systemname}/comn
+#ORA_TOP    /[du][0-9][0-9]/app/${s_systemname}/oracle
+#DB_TOP     /[du][0-9][0-9]/app/${s_systemname}/oracle
+#APPL_TOP   /[du][0-9][0-9]/app/${s_systemname}/apps
+#INST_TOP   /[du][0-9][0-9]/app/${s_systemname}/inst
+#ARCH_TOP   /[du][0-9][0-9]/app/${s_systemname}/arch
+#DATA_TOPS  /[du][0-9][0-9]/oradata/${s_systemname}
+
+COMMON_TOP /apps/${s_systemname}/fs1/EBSapps/comn
+ORA_TOP    /apps/${s_systemname}/fs1/EBSapps
+DB_TOP     /apps/${s_systemname}/db/tech_st
+APPL_TOP   /apps/${s_systemname}/fs1/EBSapps/appl
+INST_TOP   /apps/${s_systemname}/fs1/inst/apps/{ctx}
+ARCH_TOP   /apps/${s_systemname}/inst/apps/{ctx}/logs
+DATA_TOPS  /apps/${s_systemname}/oradata
+
+COMMON_TOP /apps/${s_systemname}/*/fs1/EBSapps/comn
+ORA_TOP    /apps/${s_systemname}/*/fs1/EBSapps
+DB_TOP     /apps/${s_systemname}/*/db/tech_st
+APPL_TOP   /apps/${s_systemname}/*/fs1/EBSapps/appl
+INST_TOP   /apps/${s_systemname}/*/fs1/inst/apps/{ctx}
+ARCH_TOP   /apps/${s_systemname}/*/inst/apps/{ctx}/logs
+DATA_TOPS  /apps/${s_systemname}/*/oradata
+
+COMMON_TOP /apps/${s_systemname#[A-Z][A-Z][A-Z]}/*/fs1/EBSapps/comn
+ORA_TOP    /apps/${s_systemname#[A-Z][A-Z][A-Z]}/*/fs1/EBSapps
+DB_TOP     /apps/${s_systemname#[A-Z][A-Z][A-Z]}/*/db/tech_st
+APPL_TOP   /apps/${s_systemname#[A-Z][A-Z][A-Z]}/*/fs1/EBSapps/appl
+INST_TOP   /apps/${s_systemname#[A-Z][A-Z][A-Z]}/*/fs1/inst/apps/{ctx}
+ARCH_TOP   /apps/${s_systemname#[A-Z][A-Z][A-Z]}/*/inst/apps/{ctx}/logs
+DATA_TOPS  /apps/${s_systemname#[A-Z][A-Z][A-Z]}/*/oradata

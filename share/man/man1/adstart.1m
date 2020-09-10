@@ -1,0 +1,121 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH adstart 1M "12 Aug 1998"
+.tr ~
+.SH NAME
+adstart, adstop \- start/stop E-Business applications services
+.SH SYNOPSIS
+.SS Startup
+\f3adstart\f1 [\f3-n\f1] [\f3-v\f1] [\f3-c\f1] [\f2s_systemname\f1 ...]
+.SS Shutdown
+\f3adstop\f1 [\f3-n\f1] [\f3-v\f1] [\f3-c\f1] [\f2s_systemname\f1 ...]
+.SH DESCRIPTION
+.IX "adstop" "" "\fLadstart\fP \(em print ORACLE_HOME"
+.P
+Issuing this command will start/stop all applications services for the 
+E-Business suite specified \f2s_systemname\f1.
+.P
+Alternatively, if no \f2s_systemname\f1 is specified, then the 
+\f5oratab\f1 file is examined for 
+E-Business Suite instances listed by their the server or tools ORACLE_HOME.
+The database appearing in the oratab must be the server or tools ORACLE_HOME.
+The Applications technology stack 
+is assumed to reside on the same system. If an APPL_TOP cannot be found for
+the database in question no services will be attempted to be started or
+stopped.
+.P
+\f3adstart/adstop\f1 simply locates the appropriate control script,
+\f5adstrtal.sh\f1 and \f5adstpall.sh\f1 to start or stop services respectively,
+and passes the applications username and password - which are obtained from
+.BR adpasswd (1).
+Alternatively the operator username and password can be supplied - which are
+obtained from
+.BR adcpusr (1).
+.P
+If no username and password is obtained by either of these methods then
+non-blocking reads on standard input of first the (apps or operator)
+username and then the password are made. This username and password are
+then supplied to the control script. No prompting is made for the
+username and password.
+.SH OPTIONS
+.TP
+\f3-n\f1
+Do not execute the actions just print a list of that which
+would have been run. When this option is present,
+.BR adsvcctl (1M)
+is also run to display which services are enabled.
+.TP
+\f3-c\f1
+Use the operator username and password instead of the apps username and
+password. This can be initially set up with 
+.BR adcpusr (1).
+.SH FILES
+.PD 0
+.TP 30
+\f5/var/opt/oracle/oratab\f1
+oratab file on System V.4
+.TP 30
+\f5/etc/oratab\f1
+oratab file on other systems
+.TP 45
+\f5BASEDIR/share/lib/adstop.sh\f1
+Shutdown action
+.TP 45
+\f5BASEDIR/share/lib/adstart.sh\f1
+Startup action
+.TP 45
+\f5$COMMON_TOP/admin/CONTEXT_NAME/adstrtal.sh\f1
+.TP 45
+\f5$COMMON_TOP/admin/CONTEXT_NAME/adstpall.sh\f1
+Scripts - 11i
+.TP 45
+\f5$INST_TOP/admin/scripts/adstrtal.sh\f1
+.TP 45
+\f5$INST_TOP/admin/scripts/adstpall.sh\f1
+Scripts - R12
+.PD
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR adcpusr (1),
+.BR adpasswd (1),
+.BR adsvcctl (1M),
+.BR nbread (1),
+.BR oratab (4)
+.SH NOTES
+This command is for local services only.
+.SH EXAMPLES
+.nf
+\f5$ \f7adstart -c -n DEV
+The following Services are enabled:
+  Oracle Apache Server DEV_sunhost                   adapcctl.sh
+  OracleTNSListener80APPS_DEV_sunhost                adalnctl.sh
+  OracleConcMgrDEV_sunhost                           adcmctl.sh
+  OracleFormsServer-Forms60DEV_sunhost               adfrmctl.sh
+  Oracle Reports Server [Rep60_DEV_sunhost]          adrepctl.sh
+  Oracle Metrics Client DEV_sunhost                  adfmcctl.sh
+  Oracle Metrics Server DEV_sunhost                  adfmsctl.sh
+/u03/inst/apps/DEV_sunhost/admin/scripts/adstrtal.sh CONCOPER/1392!74fc?7213
+.fi
+.P
+Display the command which stops the services for DEV supplying the 
+username and password:
+.nf
+.sp
+\f5$ \f7{ echo scott; echo tiger; } | adstop -n DEV\f5
+  Oracle Apache Server DEV_sunhost                   adapcctl.sh
+  OracleTNSListener80APPS_DEV_sunhost                adalnctl.sh
+  OracleConcMgrDEV_sunhost                           adcmctl.sh
+  OracleFormsServer-Forms60DEV_sunhost               adfrmctl.sh
+  Oracle Reports Server [Rep60_DEV_sunhost]          adrepctl.sh
+  Oracle Metrics Client DEV_sunhost                  adfmcctl.sh
+  Oracle Metrics Server DEV_sunhost                  adfmsctl.sh
+/u03/inst/apps/DEV_sunhost/admin/scripts/adstrtal.sh scott/tiger
+.fi

@@ -1,0 +1,14 @@
+# The package must be built from THIS directory.
+
+# A valid ORACLE_HOME is required in the environment before building this
+# package.
+
+# For example:
+
+	#ORACLE_HOME=/u66/app/EOY1/oracle/9.2.0 make
+	#ORACLE_HOME=/u66/app/EOY1/oracle/9.2.0 make
+	#ORACLE_HOME=/u65/app/REGR/oracle/11.1.0 make
+	#ORACLE_HOME=/u65/app/DOB1/oracle/11.1.0 make all package uuencode STAGE=/stage/beta 
+	ORACLE_HOME=/u65/app/DOB1/oracle/11.1.0 make all package uuencode
+
+

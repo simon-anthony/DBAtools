@@ -1,0 +1,53 @@
+To build:
+
+ A. Audience
+
+      This document refers to the building of the software directly
+      from source code.  This is distinct from building from the distribution
+      tarball as the code has not been configured by Autotools at
+      this stage.
+
+
+  B. Dependency Overview
+
+      You'll need the following build tools to compile XMLp:
+
+      * autoconf 2.69 or later
+      * automake 1.15 or later
+      * libtool 2.4.6 or later
+      * a reasonable C compiler (xlc, gcc, Visual Studio, etc.)
+
+
+  C. Building
+      You'll need to create the Autotools configuration as these files
+      are not saved with the source:
+
+        $ autoreconf --install
+
+      It is then possible to run "./configure". You will need to specify
+      a valid ORACLE_HOME and the path to an E-Business environment file:
+
+        $ ./configure \
+            -with-oracle-home=/opt/oracle/product/12.2.0/dbhome 
+
+      Having done this you can create the tarball for RPM:
+
+        $ make dist-gzip
+
+      And move it to the SOURCES directory
+
+        $ mv dbatools-<m>.<n>.tar.gz <_topdir>/SOURCES
+
+      Copy the spec file:
+
+        $ cp data/dbatools-<m>.<n>-<v>.spec <_topdir>/SPECS
+
+      And edit it for local requirements, specifically the
+
+            -with-oracle-home=
+
+      arguments to "./configure" mentioned previously.
+
+      You can then build the package:
+
+        $ rpmbuild -bb <_topdir>/SPECS/xmlp-<m>.<n>-<v>.spec

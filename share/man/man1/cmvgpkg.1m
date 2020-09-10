@@ -1,0 +1,106 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH cmvgpkg 1M "05 Jun 2001" ""
+.SH NAME
+cmvgpkg \- display/activate volume groups for SGeRAC Toolkit package
+.SH SYNOPSIS
+\f3cmvgpkg\f1 [\f3-v\f1] [\f3-a\f1[\f3-s\f1]|\f3-d\f1[\f3-s\f1]] [\f3-n \f2node_name\f1]... \f2package_name\f1
+.SH DESCRIPTION
+.IX "cmvgpkg"
+.P
+\f3cmvgpkg\f1 displays the volume groups associated with packages configured
+using the Serviceguard
+Extensions for Real Applications Clusters (SGeRAC) Toolkit. With 
+the \f3-a\f1 option the volumes will be activated, and with the \f3-d\f1
+option the volumes will be deactivated.
+.P
+The list of volumes is extracted from those configured in the package's
+control script.
+.SH OPTIONS
+.TP
+\f3\-a\f1
+Activate volumes. The command to use for volume activation is that configured
+as the "VGCHANGE" variable in the control script (defined below).
+.TP
+\f3\-d\f1
+Deactivate volumes. The command to use for volume deactivation is
+\f3vgchange -n\f1.
+.TP
+\f3\-s\f1
+Produce a script to activate the volume groups on standard output which can be
+subsequently executed by the root user. This implies the current node only.
+If \f3-n\f1 is used when \f3-s\f1 is present then the only \f2node_name\f1
+that can be specified is the current hostname.
+.TP
+\f3\-n \f2node_name\f1
+Acts only on a specific node.
+.TP
+\f3\-v\f1
+Be more verbose with messages. Multiple occurrences of this option increase
+the verbosity, for example, \f3-vv\f1, \f3-vvv\f1 etc.
+.SH EXTERNAL INFLUENCES
+.P
+Previous versions of this command acted on the local node only. To preserve
+this behaviour set the environmental variable \f3CMVGPKG_LOCAL_ONLY\f1=1.
+Note also that in keeping consistency with the old form of \f3cmvgpkg\f1, 
+specifying \f3-n\f1 when \f3CMVGPKG_LOCAL_ONLY\f1 is true generates a
+syntax error.
+.SH EXAMPLES
+Display the status for the volume groups for the package racp-\f2sid\f1
+(associated with database SID):
+.nf
+.sp
+\f5$ \f7cmvgpkg racp-\f2sid\f5
+.ft 1
+.ft 5
+/dev/vg_data_perf         available, shared, server read/write
+/dev/vg_logs_123A_1_perf  available, shared, server read/write
+/dev/vg_logs_123B_1_perf  available, shared, server read/write
+/dev/vg_logs_456A_2_perf  available, shared, server read/write
+/dev/vg_logs_456C_2_perf  available, shared, server read/write
+.fi
+.P
+Activate volume groups for racp-\f2sid\f1 on node \f2node1\f1:
+.nf
+.sp
+\f5$ \f7cmvgpkg -n \f2node1\f1\f7 -a racp-\f2sid\f5
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH FILES
+.TP 30
+\f5/etc/cmcluster/racp-\f2sid\f5/rac-\f2sid\f5.ctl\f1
+Control script for package racp-\f2sid\f1.
+.SH NOTES
+.P
+Only the superuser can run this command or 
+users who have been granted the provision of Role Based Access control for 
+non-superuser execution of the \f3cmvgpkg\f1 command.
+.P
+For example, suppose that the user \f2oracle\f1 is the notional owner of an
+Oracle database installation configured as a SGeRAC Toolkit package
+and has been granted the appropriate
+role based access to execute the \f3cmvgpkg\f1 command. Then the command can
+be executed with the following:
+.nf
+.sp
+\f5$ \f7privrun /usr/contrib/lib/cmvgpkg \f5
+.fi
+.P
+In addition the invoking user must have \f2PACKAGE_ADMIN\f1 status for the
+package in question.
+.SH SEE ALSO
+.BR cmmakepkg (1),
+.BR vgchange (1M),
+.BR rbac (5)
+.TP 30
+\f5/opt/cmcluster/SGeRAC/toolkit/README\f1
+Toolkit documentation.

@@ -1,0 +1,3 @@
+# $Header$
+
+SUBDIRS = oracle

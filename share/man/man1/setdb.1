@@ -1,0 +1,99 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH setdb 1 "21 Apr 2007" ""
+.SH NAME
+setdb \- set environment for database access
+.SH SYNOPSIS
+\f3FPATH=BASEDIR/share/lib/functions export FPATH\f1
+.sp
+\f3setdb\f1 [\f3-b\f1] [\f3-o\f1|\f3-t \f2two_task\f1] [\f2oracle_sid\f1]
+.SH DESCRIPTION
+.IX "setdb"
+.sp
+.P
+\f3setdb\f1 
+sets the current shell environment with approriate values for a valid \f3ORACLE_HOME\f1.
+.P
+If \f3-o\f1 or \f3-t\f1 are present then the oratab file is searched for
+\f2oracle_sid\f1.
+Previous \f3ORACLE_HOME\f1s found in \f3PATH\f1 (that are present in the
+oratab file) are removed when a successful match is found.
+.P
+Otherwise, a search is made for an E-Business database context
+file with the context variable "s_systemname" equal to \f2oracle_sid\f1 and its settings used to supply values.
+.P
+If \f2oracle_sid\f1 is not supplied an attempt to guess its value is made based on the
+current user id.
+.SH OPTIONS
+.TP
+\f3-o\f1
+Search the oratab file for value \f2oracle_sid\f1, using this to set the 
+\f3ORACLE_HOME\f1 and the \f3ORACLE_SID\f1 value.
+.IP
+When invoked in this manner \f3setdb\f1 behaves like the typical invocation of \f3oraenv\f1:
+.DS
+.sp
+.nf
+\f1$ \f3ORACLE_SID=\f2oracle_sid\f1 \f3ORAENV_ASK=NO . oraenv\f1
+.fi
+.DE
+.IP
+On systems where
+.BR getopts (1) 
+recognises "\f3+\f1" as an option prefix, when specifying an ASM \f2oracle_sid\f1 either omit the leading "+".
+.DS
+.sp
+.nf
+\f1$ \f3setdb -o \f2ASM\f1
+.fi
+.DE
+.IP
+or terminate the option list in the standard fashion:
+.DS
+.sp
+.nf
+\f1$ \f3setdb -o -- \f2+ASM\f1
+.fi
+.DE
+.TP
+\f3-t \f2two_task\f1
+Search the oratab file for \f2oracle_sid\f1, if specified, and use this to set the
+\f3ORACLE_HOME\f1. If \f2oracle_sid\f1 is not specified, an entry matching
+\f2two_task\f1 must exist in the oratab file.
+\f3TWO_TASK\f1 is set from \f2two_task\f1 and must exist 
+as a TNS alias in the usual location(s).
+.TP
+\f3-b\f1
+Add \f3ORACLE_HOME\f1 as the beginning entry of the new value for \f3PATH\f1 rather
+than the last. 
+.SH FILES
+.TP 30
+\f5/var/opt/oracle/oratab\f1
+oratab file on System V.4
+.TP 30
+\f5/etc/oratab\f1
+oratab file on other systems
+.TP 30
+\f5$HOME/.tnsnames.ora\f1
+Local TNS alias file.
+.TP 30
+\f5$TNS_ADMIN/tnsnames.ora\f1
+Configured TNS alias file.
+.TP 30
+\f5$ORACLE_HOME/network/admin/tnsnames.ora\f1
+Default TNS alias file.
+.SH WARNINGS
+.P
+No search is made for TNS aliases in LDAP.
+.SH AUTHOR
+Simon Anthony(santhony@me.com)
+.SH SEE ALSO
+.BR pset (1)

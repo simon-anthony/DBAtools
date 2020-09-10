@@ -1,0 +1,176 @@
+#/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running postinstall script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+SW_LOCATION=/opt/oracle	# we set this since the package was formerly locatable
+
+######
+#
+# bin
+msg NOTE "Creating links for \"$SW_LOCATION/bin\""
+cd ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/bin || exit 1
+ln adstatus adps
+ln adstatus adtns
+
+release=`/usr/bin/uname -r`
+
+# pgrep/pkill not required for B.11.31 - but installed since it can match
+# against full argument vector
+# pmap not required for B.11.31
+msg NOTE "Linking pgrep/pkill for $release"	
+ln pgrep pkill
+
+files="adenv adstatus ctx getctx adcfg adpre sql mkenv chkinv sshping adcustom ckrac adsessions dbh getappspass getprb adctl adpasswd ckdba ckoper adcpusr"
+for file in $files
+do
+	msg NOTE "Fixing \"$SW_LOCATION/bin/$file\""
+	ex -s ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/bin/$file <<-!
+		g/SW_LOCATION/s;SW_LOCATION;${SW_LOCATION%/};g
+		g/\<PRODUCT\>/s;PRODUCT;$PRODUCT;g
+		w!
+	!
+done
+
+if [ -x /usr/bin/ckdate ]
+then
+	ln -f -s /usr/bin/ckdate ckdate
+	[ -x /usr/bin/ckgid ]   && ln -f -s /usr/bin/ckgid ckgid
+	[ -x /usr/bin/ckint ]   && ln -f -s /usr/bin/ckint ckint
+	[ -x /usr/bin/ckitem ]  && ln -f -s /usr/bin/ckitem ckitem
+	[ -x /usr/bin/ckkeywd ] && ln -f -s /usr/bin/ckkeywd ckkeywd
+	[ -x /usr/bin/ckpath ]  && ln -f -s /usr/bin/ckpath ckpath
+	[ -x /usr/bin/ckrange ] && ln -f -s /usr/bin/ckrange ckrange
+	[ -x /usr/bin/ckstr ]   && ln -f -s /usr/bin/ckstr ckstr
+	[ -x /usr/bin/cktime ]  && ln -f -s /usr/bin/cktime cktime
+	[ -x /usr/bin/ckuid ]   && ln -f -s /usr/bin/ckuid ckuid
+	[ -x /usr/bin/ckyorn ]  && ln -f -s /usr/bin/ckyorn ckyorn
+elif [ -x /usr/local/bin/ckdate ]
+then
+	ln -f -s /usr/local/bin/ckdate ckdate
+	[ -x /usr/local/bin/ckgid ]   && ln -f -s /usr/local/bin/ckgid ckgid
+	[ -x /usr/local/bin/ckint ]   && ln -f -s /usr/local/bin/ckint ckint
+	[ -x /usr/local/bin/ckitem ]  && ln -f -s /usr/local/bin/ckitem ckitem
+	[ -x /usr/local/bin/ckkeywd ] && ln -f -s /usr/local/bin/ckkeywd ckkeywd
+	[ -x /usr/local/bin/ckpath ]  && ln -f -s /usr/local/bin/ckpath ckpath
+	[ -x /usr/local/bin/ckrange ] && ln -f -s /usr/local/bin/ckrange ckrange
+	[ -x /usr/local/bin/ckstr ]   && ln -f -s /usr/local/bin/ckstr ckstr
+	[ -x /usr/local/bin/cktime ]  && ln -f -s /usr/local/bin/cktime cktime
+	[ -x /usr/local/bin/ckuid ]   && ln -f -s /usr/local/bin/ckuid ckuid
+	[ -x /usr/local/bin/ckyorn ]  && ln -f -s /usr/local/bin/ckyorn ckyorn
+fi
+
+######
+#
+# sbin
+msg NOTE "Creating links for \"$SW_LOCATION/sbin\""
+cd ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/sbin || exit 1
+ln dbacmd  dbvers
+ln dbacmd  dbid
+ln dbstart adstart
+ln dbstart adstop
+ln dbstart dbshut
+ln dbstart lsnrstart
+ln dbstart lsnrstop
+
+files="dbstart"
+for file in $files
+do
+	msg NOTE "Fixing \"$SW_LOCATION/sbin/$file\""
+	ex -s ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/sbin/$file <<-!
+		g/SW_LOCATION/s;SW_LOCATION;${SW_LOCATION%/};g
+		g/\<PRODUCT\>/s;PRODUCT;$PRODUCT;g
+		w!
+	!
+done
+
+######
+#
+# /etc/opt/oracle
+if [ -d /etc/opt/oracle ]
+then
+	if [ -x /opt/oracle/bin/getgrname ]
+	then
+		if /opt/oracle/bin/getgrname/getgrname dba >/dev/null 2>&1
+		then
+			chgrp dba /etc/opt/oracle
+			chmod g+w /etc/opt/oracle
+		fi
+	fi
+fi
+
+######
+#
+# share/lib
+msg NOTE "Creating links for \"$SW_LOCATION/share/lib\""
+cd ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/share/lib || exit 1
+ln adstart.sh    adstop.sh
+ln lsnrstart.sh   lsnrstop.sh
+
+files="adstart.sh dbstart.sh dbshut.sh lsnrstart.sh"
+for file in $files
+do
+	msg NOTE "Fixing \"$SW_LOCATION/share/lib/$file\""
+	ex -s ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/share/lib/$file <<-!
+		g/SW_LOCATION/s;SW_LOCATION;${SW_LOCATION%/};g
+		w!
+	!
+done
+
+######
+#
+# share/lib/sql
+files="login.sql"
+for file in $files
+do
+	msg NOTE "Fixing \"$SW_LOCATION/share/lib/sql/$file\""
+	ex -s ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/share/lib/sql/$file <<-!
+		g/DATADIR/s;DATADIR;${SW_LOCATION%/}/share;g
+		w!
+	!
+done
+
+msg NOTE "Setting Security Attributes"
+if setfilexsec -f start_full -p COMMALLOWED,OWNER,NETADMIN -P COMMALLOWED,OWNER,NETADMIN /opt/oracle/bin/lsp
+then
+	:
+else
+	msg WARNING "Failed to set file attributes"
+fi
+
+if /usr/sbin/swlist T1907BA >/dev/null 2>&1
+then
+	:
+else
+	msg NOTE "Serviceguard Extension for RAC not installed"
+	exit 0
+fi
+
+######
+#
+# /usr/contrib/bin
+
+files="cmmaintpkg cmvgpkg"
+for file in $files
+do
+	msg NOTE "Fixing \"/usr/contrib/bin/$file\""
+	ex -s /usr/contrib/bin/$file <<-!
+		g/SW_LOCATION/s;SW_LOCATION;${SW_LOCATION%/};g
+		g/\<PRODUCT\>/s;PRODUCT;$PRODUCT;g
+		w!
+	!
+done
+
+msg NOTE "Adding Toolkit Role"
+roleadm add Toolkit
+authadm add hpux.sgerac.maint
+authadm assign Toolkit hpux.sgerac.maint
+roleadm assign oracrs Toolkit
+roleadm assign "&dba" Toolkit
+cmdprivadm add cmd=/usr/contrib/lib/cmmaintpkg op=hpux.sgerac.maint euid=0
+cmdprivadm add cmd=/usr/contrib/lib/cmvgpkg op=hpux.sgerac.maint euid=0
+
+exit 0

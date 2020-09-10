@@ -1,0 +1,37 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH mkdefs 1 "05 Jun 2001" ""
+.SH NAME
+mkdefs \- create adpatch defaults file
+.SH SYNOPSIS
+\f3mkdefs\f1
+\f3-p \f2password\f1 \f3-s \f2sid\f1
+.SH DESCRIPTION
+.IX "mkdefs"
+.P
+\f3mkdefs\f1 generates the defaults file used by adpatch by 
+invoking \f3adbatch\f1(1M) with the \f3-g\f1 option and passing in
+arguments as appropriate.
+.SH OPTIONS
+.TP
+\f3\-p \f2password\f1
+Supply the password for the SYSTEM database user.
+.TP
+\f3\-s \f2sid\f1
+Specify the name of the eBusiness system.
+.SH NOTES
+The APPS password is determined by running \f3getappspass\f1(1), so the usual
+caveats apply.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR adbatch (1M),
+.BR getappspass (1)

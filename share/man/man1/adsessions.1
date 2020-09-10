@@ -1,0 +1,100 @@
+.\" @(#)$Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.TH adsessions 1 "16 Jun 1999"
+.tr ~
+.SH NAME
+adsessions \- print session connection information for e-Business Suite 
+.SH SYNOPSIS
+.nf
+\f3adsessions\f1 [\f3-v\f1[\f3-x\f1] [\f3-h\f1] [[\f3-d|\f3-a\f1|\f3-o\f1] \f3-s \f2sid\f1] [\f3-p \f2password\f1 [\f3-i\f1]] [\f3-f \f2file\f1] [\f2host\f1...]
+.sp
+.SH DESCRIPTION
+.IX "adsessions" "" "\fLadsessions\fP \(em print ORACLE_SID"
+\f3adsessions\f1 determines which processes on which nodes are connected to the current database connection.
+.P
+Without the \f3-v\f1 option \f3adsessions\f1 will display only a summary of the 
+connections.
+.SH OPTIONS
+.TP 
+\f3\-v\f1
+Verbose: do not supress the
+.BR ps (1)
+listing.
+.TP 
+\f3\-x\f1
+Extended output for
+.BR ps (1)
+with the \f3-x\f1 option.
+.TP
+\f3\-h\f1
+Verify SSH connection to each \f2host\f1 before execution.
+.TP 
+\f3\-s \f2sid\f1
+Use \f2sid\f1 to locate and source the AutoConfig generated environment file.
+.TP 
+\f3\-a\f1
+Locate and source Apps environment.
+.TP 
+\f3\-d\f1
+Locate and source Database environment.
+.TP 
+\f3\-o\f1
+Use ORACLE_HOME from oratab file.
+.TP
+\f3\-p \f2password\f1
+The password for the APPS user in the current environment. If not supplied the user will be prompted.
+.TP
+\f3\-i\f1
+Initialise for first use by creating the database types required by the SQL
+query used by the program in the APPS schema.
+.TP
+\f3\-f \f2file\f1
+Save output in \f2file\f1.
+.SH EXAMPLES
+.P
+Print a summary of the current connections:
+.nf
+.ft 5
+
+    \f5$ \f7adsessions -p xxxx client1 client3 client3 client4 server1 server2\f5
+
+.ft 5
+    SERVER    ALL    CLIENT    HTTPD  FORMS   JAVA    FND    SQL  OTHER
+    server1   344 <- client1       0     74    270      0      0      0
+    server1   388 <- client2       7     65    316      0      0      0
+    server1   322 <- client3       0     71    250      0      0      1
+    server1   370 <- client4       6     51    311      0      0      2
+    server1    30 <- server1       0      0      0     23      4      3
+    server1     1 <- server2       0      0      0      0      0      1
+             1455                 13    261   1147     23      4      7
+
+    server2   335 <- client1       0     61    272      0      0      2
+    server2   437 <- client2       0     54    382      0      0      1
+    server2   396 <- client3       3     65    327      0      0      1
+    server2   360 <- client4       0     57    285      0      0     18
+    server2     1 <- server1       0      0      0      1      0      0
+    server2    45 <- server2       0      0      0     41      2      2
+             1574                  3    237   1266     42      2     24
+.ft 1
+.fi
+.P
+Note that if we wish to see the FND connections to the database which,
+in this example, are running on the server nodes \f5server\f2n\f1, we must include
+those nodes in the list of hosts.
+.SH RETURN VALUES
+.P
+SQL Errors will be trapped and returned.
+.P
+General errors will exit non-zero.
+.PD
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR ps (1)

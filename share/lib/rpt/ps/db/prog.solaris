@@ -1,0 +1,110 @@
+#!/bin/sh -
+#ident $Header$
+
+PATH=/bin:/usr/bin export PATH
+
+prog=`basename \`dirname $0\``
+usage="[-p] [-u|-b]"
+
+filter="cat -"
+
+while getopts pub opt 2>&-
+do
+	case $opt in
+	p)	pflg=y				# use ps(1) rather than PID file
+		;;
+	u|b)
+		uflg=y				# use 'ptree' style output
+		;;
+	\?)	errflg=y
+	esac
+done
+shift `expr $OPTIND - 1`
+
+[ $errflg ] && { echo usage: $prog $usage >&2; exit 2; }
+[ $UTIL_DIR ] || { echo $prog: UTIL_DIR not set >&2; exit 1; }
+
+script=ad${prog}ctl
+
+if [ "$ID" ]
+then
+	id=$ID
+else
+	id=`expr "\`id\`" : '[^(]\{1,\}(\([^ ]\{1,\}\))'` 
+fi
+
+UTIL_DIR=$ORACLE_HOME/appsutil/scripts/$DBCTX
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi
+
+# ptreefmt:
+#   Input: 'ps -H -o pid,args'               Output: 'ptree'
+#   ^12345 xxxx                              ^12345 xxxx
+#   ^ 2345 abc                               ^   2345 abc
+#   ^ 3456   xyz                             ^   3456 xyz
+#   ^ 4356   uvw                             ^   4356 uvw
+#   ^ 4776     abc                           ^     4776 abc
+ptreefmt() {
+	awk '
+	{
+		match($0, /^[ ]*[0-9]+[ ]+/)
+
+		if (RLENGTH == 6) {	# root parent
+			print 
+			next
+		}
+		indent = (RLENGTH - 6)/2
+		printf("%s%5d %s\n", pad(indent), $1, substr($0, RLENGTH+1))
+
+	}
+	function pad(n,  b) {
+		b =  ""
+		for (i = 0; i < n; i++) 
+			b = b "  "
+		return b
+	}'
+}
+# colfmt: columnize output
+#
+colfmt() {
+	sort -k2 |
+	awk '
+	BEGIN {
+		lines = 0
+	}
+	{
+		a[lines++] = $0
+	}
+	END {
+		i = 0
+		while (i < lines) {
+			printf("%s %s %s\n",
+				a[i++],
+				i < lines ? a[i++] : "",
+				i < lines ? a[i++] : "")
+		}
+	}'
+}
+
+if [ $uflg ]
+then
+	filter=ptreefmt
+else
+	filter=colfmt
+fi
+
+echo Processes:
+
+ps -u $id -o pid,args | sed -n '
+/^ *[0-9]\{1,\} [^ ]*ora_/ {
+	p; n;
+	: loop
+	/^ *[0-9]\{1,\} [^ ]*ora_/ {
+		p; n;
+		b loop
+	}
+}' | $filter

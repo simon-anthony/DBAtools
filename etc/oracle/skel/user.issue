@@ -1,0 +1,5 @@
+
+[1msetdb[0m [[1m-o[0m|[1m-t[0m [31mname[0m] [[32mname[0m]       set database environment in current shell
+
+[1msetapps[0m [[1m-s[0m[31m name[0m] [[4mrun[0m|patch]   set E-Business run (patch) environment 
+

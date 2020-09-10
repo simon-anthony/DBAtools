@@ -1,0 +1,80 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH cmmaintpkg 1M "05 Jun 2001" ""
+.SH NAME
+cmmaintpkg \- enable/disable maintenance mode for SGeRAC Toolkit
+.SH SYNOPSIS
+\f3cmmaintpkg\f1 [\f3-v\f1] [\f3-e\f1|\f3-d\f1] [\f3-n \f2node_name\f1]... \f2package_name\f1
+.SH DESCRIPTION
+.IX "cmmaintpkg"
+.P
+\f3cmmaintpkg\f1 enables or disables the maintenance mode of the Serviceguard
+Extensions for Real Applications Clusters (SGeRAC) Toolkit. Without either
+the \f3-e\f1 or \f3-d\f1 option only the current status is displayed.
+.SH OPTIONS
+.TP
+\f3\-e\f1
+Enable maintenance mode.
+.TP
+\f3\-d\f1
+Disable maintenance mode.
+.TP
+\f3\-n \f2node_name\f1
+Acts only on a specific node.
+.TP
+\f3\-v\f1
+Be more verbose with messages. Multiple occurrences of this option increase
+the verbosity, for example, \f3-vv\f1, \f3-vvv\f1 etc.
+.SH EXAMPLES
+Display the status for the package racp-\f2sid\f1 (associated with database
+SID):
+.nf
+.sp
+\f5$ \f7cmmaintpkg racp-\f2sid\f5
+.fi
+.P
+Enable maintenance mode for racp-\f2sid\f1 on nodes \f2node1\f1 and \f2node2\f1:
+.nf
+.sp
+\f5$ \f7cmmaintpkg -e -n \f2node1\f1\f7 -n \f2node2\f5 racp-\f2sid\f5
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH FILES
+.TP 30
+\f5/etc/cmcluster/crsp-slvm/oc.debug\f1
+Maintenance mode flag for Clusterware.
+.TP 30
+\f5/etc/cmcluster/racp-\f2sid\f1/rac.debug\f1
+Maintenance mode flag for database \f2sid\f1.
+.SH NOTES
+.P
+Only the superuser can run this command or 
+users who have been granted the provision of Role Based Access control for 
+non-superuser execution of the \f3cmmaintpkg\f1 command to set maintenance mode.
+.P
+For example, suppose that the user \f2oracrs\f1 is the notional owner of the
+Oracle Clusterware installation and has been granted the appropriate
+role based access to execute the \f3cmmaintpkg\f1 command. Then the command can
+be executed with the following:
+.nf
+.sp
+\f5$ \f7privrun /usr/contrib/lib/cmmaintpkg \f5
+.fi
+.P
+In addition the invoking user must have \f2PACKAGE_ADMIN\f1 status for the
+package in question.
+.SH SEE ALSO
+.BR cmmakepkg (1),
+.BR rbac (5)
+.TP 30
+\f5/opt/cmcluster/SGeRAC/toolkit/README\f1
+Toolkit documentation.

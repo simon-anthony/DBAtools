@@ -1,0 +1,44 @@
+
+#
+#   D: Number [/dsa] or maxdata:Number[/dsa]
+#     Sets the maximum size (in bytes) that is allowed for the user data area (or user heap) when the executable program is run.
+#     This value is saved in the auxiliary header and used by the system loader to increase the soft data ulimit, if required. The
+#     default value is 0. When this option is used, the specified number of bytes are reserved for the user data area. The program
+#     might not explicitly map objects, by using shmat or mmap functions to virtual addresses that are reserved for the user data
+#     area.
+#
+#     For 32-bit programs, the maximum value allowed by the system is 0x80000000 for programs that are running under Large Program
+#     Support and 0xD0000000 for programs that are running under Very Large Program Support. See "Large Program Support Overview"
+#     in General Programming Concepts: Writing and Debugging Programs. When a non-zero value is specified, the user data area
+#     begins in segment 3, and the program uses as many segments as neccessary to satisfy the specified maxdata value.
+#
+#     For 64-bit programs the maxdata option provides a guaranteed maximum size for the programs data heap. Any value can be
+#     specified but the data area cannot extend past 0x06FFFFFFFFFFFFF8 regardless of the maxdata value specified.
+
+
+all: memtest_small memtest_large memtest_vlarge
+clean:
+	rm -f  memtest_small memtest_large memtest_vlarge
+
+memtest_small:
+	@banner small
+	$(CC) -o $@ memtest.c 
+	/usr/bin/file -m magic $@
+	dump -X32 -H $@
+	./pargs -e `./$@` | ( grep LDR_ || true )
+
+# Max value for Large is 0x80000000
+memtest_large:
+	@banner large
+	$(CC) -o $@ memtest.c -b maxdata:0x80000000
+	/usr/bin/file -m magic $@
+	dump -X32 -H $@
+	./pargs -e `./$@` | ( grep LDR_ || true )
+
+# Max value for Very Large is 0xD0000000
+memtest_vlarge:
+	@banner very large
+	$(CC) -o $@ memtest.c -b maxdata:0xD0000000/dsa
+	/usr/bin/file -m magic $@
+	dump -X32 -H $@
+	./pargs -e `./$@` | ( grep LDR_ || true )

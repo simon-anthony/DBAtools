@@ -1,0 +1,271 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH adstatus 1 "16 Jun 1999"
+.tr ~
+.SH NAME
+adstatus \- print status of e-Business Suite subsystems
+.SH SYNOPSIS
+.nf
+\f3adstatus\f1 [\f3-q\f1[\f3-v\f1]|\f3-l\f1|\f3-e\f1|\f3-n\f1] [\f3-a\f1|\f3-d\f1] [\f3-g \f2mode\f1] [\f3-p\f1] [\f3-u\f1] [\f3-w \f2num\f1]
+	[\f3-s \f2ORACLE_SID\f1 [\f3-r \f2rhost\f1]] [\f3-t \f2TWO_TASK\f1] [\f3-T \f2type\f1 [\f2rpt\f1...]]
+.sp
+\f3adps\f1 [\f3-q\f1[\f3-v\f1]|\f3-l\f1|\f3-e\f1|\f3-n\f1] [\f3-g \f2mode\f1] [\f3-p\f1] [\f3-u\f1] [\f3-w \f2num\f1]
+	[\f3-s \f2ORACLE_SID\f1 [\f3-r \f2rhost\f1]] [\f3-t \f2TWO_TASK\f1] [\f2rpt\f1...]
+.sp
+\f3adtns\f1 [\f3-q\f1[\f3-v\f1]|\f3-l\f1|\f3-e\f1|\f3-n\f1] [\f3-g \f2mode\f1] [\f3-p\f1] [\f3-u\f1] [\f3-w \f2num\f1]
+	[\f3-s \f2ORACLE_SID\f1 [\f3-r \f2rhost\f1]] [\f3-t \f2TWO_TASK\f1] [\f2rpt\f1...]
+.fi
+.SH DESCRIPTION
+.IX "adstatus" "" "\fLadstatus\fP \(em print ORACLE_SID"
+\f3adstatus\f1 provides a convenient way to run reports for various processes
+for an e-Business Suite installation. Its use depends on the existence of
+a \f5COMMON_TOP\f1 for the database, as described in the installation manual
+for Oracle e-Business Suite.
+.P
+The valid reports for the database can be shown with the \f3-l\f1 option. Unless
+the \f3-s\f1 option is used the database queried will be the current one.
+.P
+When invoked as \f3adstatus\f1 the services which are enabled (shown with 
+the \f3-e\f1) option have their command script invoked with the "status"
+argument. By default, the status for all services of all types is queried; to
+show the status of specific services the type option must be given with
+\f3-T\f1.
+.P
+Otherwise, (for \f3adps\f1 and \f3adtns\f1) a report is located to be run (the
+location of the reports is described below).
+.SH OPTIONS
+.TP 
+\f3\-q\f1
+Invoke \f3adstatus\f1 in "quiet" mode. Do not print any output.
+.TP 
+\f3\-v\f1
+Verify mode. Print the subsystems for which no processes have been started.
+Implies \f3\-q\f1.
+.TP
+\f3\-l\f1
+List the reports which are valid for this database. Only those reports
+for which an admin script \f5ad\f2rpt\f1ctl.sh\f1 exists and is
+executable will be shown. If
+\f3-T\f1 is present only reports of that type will be listed. If \f3-x\f1
+is present the admin script, if it exists, will be considered to be 
+executable irrespective
+of its permissions.
+.TP
+\f3\-e\f1
+Print a summary of the Enabled services from the context file.
+.TP
+\f3\-n\f1
+Print a summary of the roles of this node.
+.TP
+\f3\-a\f1
+For \f3adstatus\f1 restrict actions to applications tier services.
+.TP
+\f3\-d\f1
+For \f3adstatus\f1 restrict actions to database tier services.
+.TP
+\f3\-g \f2mode\f1
+Use \f2mode\f1 as the graphics mode for titles when connected to a terminal.
+Possible values are:
+.RS
+.TP 20
+\f2bold\f1
+Use bold.
+.TP 20
+\f2smso\f1|\f2so\f1|\f2standout\f1
+Use standout.
+.TP 20
+\f2smul\f1|\f2ul\f1|\f2underline\f1
+Use underline.
+.TP 20
+\f2off\f1
+Turns graphics mode off.
+.RE
+.TP 
+\f3\-p\f1
+Use \f3ps\f1(1) in preference to the contents of a PID file (wherever
+one exists) for determining running processes. Some
+\f5ad\f2rpt\f1ctl.sh\f1 scripts use files for containing the process
+IDs that it has started. Reports generally use this wherever
+available. This option overrides this behaviour. Note also that with
+this option \f3ps\f1 will be used to display processes rather than
+.BR ptree (1).
+.TP
+\f3\-u\f1
+Use UCB \f3ps\f1(1B) in preference to SystemV \f3ps\f1(1) for
+displaying output. This option has an effect even when the \f3-p\f1
+option is not used, that is, the command line output of \f3ptree\f1
+will be replaced by that of \f3ps\f1(1B). This can be used to obtain
+longer listings. Note that this is only for display, the process is
+still searched for using \f3pgrep\f1(1) or \f3ps\f1(1).
+.TP
+\f3\-w \f2num\f1
+Do not wrap screen output but trim to \f2num\f1 number columns.
+.TP
+\f3\-s \f2ORACLE_SID\f1
+Oracle SID of the database upon which the command is
+to act. If this option is not present \f3adstatus\f1 uses the current
+value of \f5ORACLE_SID\f1 or (if not set) \f5TWO_TASK\f1. This variable is
+really the "name" of the configuration.
+.TP
+\f3\-t \f2TWO_TASK\f1
+Ordinarily in e-Business Suite configurations the
+\f5ORACLE_SID\f1 and \f5TWO_TASK\f1 environment variables have the same value.
+If this option is present \f3adstatus\f1 will use the supplied value of
+\f5TWO_TASK\f1 rather than setting it the same as \f5ORACLE_SID\f1. This
+may be useful when you have applications tiers that have been configured for
+one \f5ORACLE_SID\f1 and "pointed" to another database of a different TNS
+alias.
+.TP
+\f3\-r \f2rhost\f1
+Run \f3adstatus\f1 on remote host \f2rhost\f1. Note
+that \f3-s\f1 must be supplied if this option is used. The current user
+must also be equivalenced on \f2rhost\f1. See
+.BR hosts.equiv (4).
+.TP
+\f3\-T \f2type\f1
+The type of report to run. The default type is
+\f5ps\f1. \f3adps\f1 is a link to \f3adstatus -T ps\f1, \f3adtns\f1
+is a link to \f3adstatus -T tns\f1.
+.TP
+\f2rpt\f1 ...  The report(s) to run. The reports must be named as those
+that appear with the \f3-l\f1 option. If no reports are specified all
+applicable reports are run.
+.SH EXAMPLES
+.P
+Print the status of the concurrent managers:
+.nf
+.ft 5
+
+	$ adps cm
+.ft 1
+.fi
+.P
+Return only the combined status code of the Apache, forms and reports servers:
+.nf
+.ft 5
+
+	$ adstatus -q apc frm rep
+.ft 1
+.fi
+.P
+Print a list of reports available under the \f3ps\f1 type for the database
+\f5FOO\f1.
+.nf
+.ft 5
+
+	$ adstatus -s FOO -T ps -l
+             aln - Applications Listener (FNDFS, FNDSM)
+              cm - Concurrent Manager
+             rep - Reports Servers
+             dln - Database TNS Listener
+.ft 1
+.fi
+.P
+Print the status of the CCT servers for the database \f5BAR\f1, using
+.BR ps (1B)
+for the command listing.
+.nf
+.ft 5
+
+	adstatus -s BAR -u cct
+.ft 1
+.fi
+.P
+Print a summary of this node for the database \f5FOO\f1,
+.nf
+.ft 5
+
+	$ adstatus -s FOO -u cct
+	Node ukgtjd39/ukgtgd39
+	Database             : YES
+	Concurrent Processing: YES
+	Administrative Node  : YES
+	Web Server           : NO
+	Forms Server         : NO
+
+.ft 1
+.fi
+
+.SH RETURN VALUES
+.P
+Should a report \f2rpt\f1 (of type \f3ps\f1) produce no output -
+assuming that no such processes exist, then its return code will be 1.
+The return code of \f3adstatus\f1 is the sum of all such reports. Note
+that this value may vary if \f3-p\f1 is used since a potentially
+different method is used to determine processes.
+.SS Expect File
+.P
+The return value of \f3adstatus\f1 can be influenced by setting a value
+in an "expect" file for the report. This value can be a simple value or a
+range. Simple arithmetic tests are permitted:
+.nf
+.ft 5
+	
+	>  \f2num\f1\f5  greater than \f2num\f1\f5
+	>= \f2num\f1\f5  greater than or equal to \f2num\f1\f5
+	!= \f2num\f1\f5  not equal to \f2num\f1\f5
+	== \f2num\f1\f5  equal to \f2num\f1\f5
+	<  \f2num\f1\f5  less than \f2num\f1\f5
+	<= \f2num\f1\f5  less than or equal to \f2num\f1\f5
+
+.ft 1
+.fi
+.P
+The number of processes found by \f3adstatus\f1 must match this expression,
+otherwise the return value of the report is 1.
+.P
+The \f5expect\f1 file is only used where the report type is \f3ps\f1 (or when
+\f3adstatus\f1 has been invoked as \f3adps\f1.)
+.P
+At present only one such test is permitted. If no \f5expect\f1 file exists for the
+report the comparison is implicitly \f5>=1\f1.
+.SH FILES
+.PD 0
+.TP 30
+\f5BASEDIR/lib/rpt/\f2type\f1\f5/\f2rpt\f1\f5/prog\f1
+report program for report \f2rpt\f1\f5
+.TP 30
+\f5BASEDIR/lib/rpt/\f2type\f1\f5/\f2rpt\f1\f5/comment\f1
+comment for above 
+.TP 30
+\f5BASEDIR/lib/rpt/ps/\f2rpt\f1\f5/expect\f1
+expect file for \f3ps\f1 reports
+.TP 30
+\f5$COMMON_TOP/admin/scripts/ad\f2rpt\f1\f5ctl.sh\f1
+admin script (same name as report)
+.TP 30
+\f5$DB_TOP/\f2version\f1\f5/appsutil/scripts/ad\f2rpt\f1\f5ctl.sh\f1
+admin script (same name as report)
+.TP 30
+\f5$APPL_TOP/admin/\f2ORACLE_SID\f5_\f2node\f5.xml\f1
+XML "context" configuration file
+.PD
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR pgrep (1),
+.BR ps (1),
+.BR ps (1B),
+.BR ptree (1)
+.SH NOTES
+.P
+Extra reports can be added by placing them in the relevant location in
+the reports directory. For example, a completely new class of report
+can be added in \f5BASEDIR/lib/rpt/\f2type\f1. Each individual
+report is created as a subdirectory \f2rpt\f1, which will be the name of the
+report, together with a \f5prog\f1 file which will run the report
+and a \f5comment\f1 file which will display the title of the report. \f2rpt\f1
+must have a corresponding admin script \f5ad\f2rpt\f1\f5ctl.sh\f1 with either
+path as specified in FILES.
+.P
+\f3ps\f1(1) is always used to search for processes when \f5-p\f1 is specified
+or this is the default for the report. This is irrespective of whether
+BSD ps has been specified with \f5-u\f1 which is only used to display 
+output.

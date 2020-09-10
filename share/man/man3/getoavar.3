@@ -1,0 +1,37 @@
+.\" %W%
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH ctxvar 3 "16 Jun 1999"
+.tr ~
+.SH NAME
+getoavar(), setoavar() \- get, set context variables
+.SH SYNOPSIS
+\f3cc \f1[ \f2flag\f1 ... ] \f2file\f1 ... -loavar [ \f2library\f1 ... ]
+.sp
+\f5#include BASEDIR/include/oavar.h\f1 
+.sp
+\f3char \f2*getoavar(\f7const char *\f5name\f7, const char *\f5path\f7)\f1;
+.sp
+\f3char \f2*setoavar(\f7const char *\f5name\f7, \f7const char *\f5value\f7, const char *\f5path\f7)\f1;
+.SH DESCRIPTION
+.IX "getoavar" "" "\fLgetoavar\fP \(em print ORACLE_HOME"
+The \f3getoavar()\f1 function returns the value of the context variable \f2name\f1 from the
+context file identified by \f2path\f1.
+.P
+The \f3setoavar()\f1 function sets the value of the context variable \f2name\f1
+to \f2value\f1 in the context file identified by \f2path\f1. A lock is taken
+out on \f2path\f1 between update operations.
+.P
+.SH RETURN VALUES
+Both functions return the value of the context variable if the operation is
+successful, and NULL otherwise.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR ctxvar (1)

@@ -1,0 +1,7 @@
+If your target ORACLE_HOME is not the same as the one under which this was
+compiled you will need the NLS files from the compiled environment.
+
+For example, if compiled under a 9i ORACLE_HOME and adsvcctl is run under
+an 8.0.6 ORACLE_HOME :
+
+	ORA_NLS33=$BASEDIR/share/lib/nlsdata adsvcctl ...

@@ -1,0 +1,162 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH adsvcctl 1M "22 Sep 2000"
+.tr ~
+.SH NAME
+adsvcctl \- query service settings from context file
+.SH SYNOPSIS
+.nf
+\f3adsvcctl \f1[\f3-r \f2release\f1] -e \f2context-file\f1\f1
+
+.fi
+.SH DESCRIPTION
+.IX "adsvcctl" "" "\fLadsvcctl\fP \(em set environment ORACLE"
+\f3adsvcctl\f1 prints the status of services as configured in the 
+Applications "context file". The enabled services will be those which the
+control scripts \f5adstrtal.sh\f1 and \f5adstpall.sh\f1 will
+attempt to, respectively, start or stop.
+.P
+It provides functionality previously found in the ServiceControl
+class.
+.SH OPTIONS
+.TP
+\f3-r \f2release\f1
+\f2release\f1 is the version of Oracle e-Business Suite, either 11 or 12.
+.IP
+In Release 11 services are grouped into "processes" and each "process"
+is either enabled or disabled:
+.IP
+.RS
+.nf
+.ft 5
+<oa_processes>
+	<oa_process>
+		<oa_process_status>disabled</oa_process_status>
+	</oa_process>
+	...
+</oa_processes>
+.ft 1
+.fi
+.RE
+.IP
+In Release 12 a "services" group contains a "service list" and a "service group
+list". A "service group list" comprises a number of "service groups" which are
+collections of "service"s. Each "service group" may be either enabled or disabled and
+within an enabled "service group" each "service" (contained in the "service list") can be 
+further enabled or disabled.
+.IP
+.RS
+.nf
+.ft 5
+<oa_services>
+	<oa_service_list>
+		<oa_service_list>
+			<oa_service_status>disabled</oa_service_status>
+		</oa_service_list>
+		...
+	</oa_service_list>
+	<oa_service_group_list>
+		<oa_service_group>
+			<oa_service_group_status>enabled</oa_service_group_status>
+		</oa_service_group>
+		...
+	</oa_service_group_list>
+</oa_services>
+.ft 1
+.fi
+.RE
+.TP
+\f3-e \f2file\f1
+\f2file\f1 is the path of the XML autoconfig file, usually:
+.nf
+\f5$APPL_TOP/admin/${TWO_TASK}_\f2hostname\f5.xml\f1.
+.fi
+.SH FILES
+.PD 0
+.TP 30
+\f5$COMMON_TOP/admin/$CONTEXT/adstrtal.sh\f1
+Script to start services.
+.TP 30
+\f5$INST_TOP/admin/scripts/adstrtal.sh\f1
+Script to start services (R12).
+.TP 30
+\f5$COMMON_TOP/admin/$CONTEXT/adstpall.sh\f1
+Script to stop services.
+.TP 30
+\f5$INST_TOP/admin/scripts/adstpall.sh\f1
+Script to stop services (R12).
+.PD
+.SH ENVIRONMENT
+The environment variable \f5ORA_NLS10\f1 is used to locate the NLS
+encoding data files. If this is not set on invocation then the location
+used is \f5BASEDIR/share/nlsdata\f1.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH EXAMPLES
+.P
+.nf
+.sp
+\f5$ \f7adsvcctl -e /d07/oracle/muleappl/admin/MULE_sunhost.xml\f5
+[Service Control Execution Report]
+The report format is:
+  <Service>                                     <Script>         <Status>
+
+  Oracle Apache Server MULE_sunhost             adapcctl.sh
+  Oracle Apache Server MULE_sunhost for PL/SQL  adapcctl.sh      Disabled
+  OracleTNSListener80APPS_MULE_sunhost          adalnctl.sh
+  Oracle TCF SocketServer MULE_sunhost          adtcfctl.sh      Disabled
+  OracleConcMgrMULE_sunhost                     adcmctl.sh
+  OracleFormsServer-Forms60MULE_sunhost         adfrmctl.sh
+  Oracle Reports Server [Rep60_MULE_sunhost]    adrepctl.sh
+  Oracle Metrics Client MULE_sunhost            adfmcctl.sh
+  Oracle Metrics Server MULE_sunhost            adfmsctl.sh
+  Oracle ICSM MULE_sunhost                      ieoicsm.sh       Disabled
+  Oracle Fulfillment Server MULE_sunhost        jtffmctl.sh
+  Oracle iProcurement Bulk Loader MULE_sunhost  icxblkctl.sh     Disabled
+  Oracle Discoverer services MULE_sunhost       addisctl.sh
+
+
+ServiceControl is exiting with status 0
+.fi
+.P
+For R12 the format is different (being divided into service groups
+which are enabled or disabled):
+.nf
+.sp
+\f5$ \f7adsvcctl -r12 -e /d07/oracle/muleappl/admin/MULE_sunhost.xml\f5
+[Service Control Execution Report]
+The report format is:
+  <Service Group>            <Service>                                  <Script>         <Status>
+
+  Root Service                                                                           Disabled
+  Root Service               Oracle Process Manager for MULE_sunhost    adopmnctl.sh     Disabled
+  Web Entry Point Services                                                               Disabled
+  Web Entry Point Services   Oracle HTTP Server MULE_sunhost            adapcctl.sh      Disabled
+  Web Entry Point Services   OracleTNSListenerAPPS_MULE_sunhost         adalnctl.sh      Disabled
+  Web Application Services                                                               Disabled
+  Web Application Services   OACORE OC4J Instance MULE_sunhost          adoacorectl.sh   Disabled
+  Web Application Services   FORMS OC4J Instance MULE_sunhost           adformsctl.sh    Disabled
+  Web Application Services   OAFM OC4J Instance MULE_sunhost            adoafmctl.sh     Disabled
+  Web Application Services   FORMS-C4WS OC4J Instance MULE_sunhost      adforms-c4wsctl.sh Disabled
+  Web Application Services   OracleTNSListenerAPPS_MULE_sunhost         adalnctl.sh      Disabled
+  Batch Processing Services                                                              Enabled
+  Batch Processing Services  OracleTNSListenerAPPS_MULE_sunhost         adalnctl.sh
+  Batch Processing Services  OracleConcMgrMULE_sunhost                  adcmctl.sh
+  Batch Processing Services  Oracle ICSM MULE_sunhost                   ieoicsm.sh       Disabled
+  Batch Processing Services  Oracle Fulfillment Server MULE_sunhost     jtffmctl.sh
+  Other Services                                                                         Enabled
+  Other Services             OracleFormsServer-Forms MULE_sunhost       adformsrvctl.sh  Disabled
+  Other Services             Oracle Metrics Client MULE_sunhost         adfmcctl.sh      Disabled
+  Other Services             Oracle Metrics Server MULE_sunhost         adfmsctl.sh      Disabled
+  Other Services             Oracle MWA Service MULE_sunhost            mwactlwrpr.sh    Disabled
+
+
+ServiceControl is exiting with status 0
+.fi

@@ -1,0 +1,82 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH getappspass 1 "05 Jun 2001" ""
+.SH NAME
+getappspass \- retrieve APPS user password
+.SH SYNOPSIS
+\f3getappspass\f1
+[\f3-f\f1[\f3-h \f2oracle_home\f1|\f3-o\f1]] \f3-s \f2sid\f1
+.SH DESCRIPTION
+.IX "getappspass"
+.P
+\f3getappspass\f1 retrieves the password for the e-Business Suite APPS
+user given that the invoking user has appropriate privileges (i.e. OS
+authenticated as sysdba).
+.P
+For version 11.5.x the APPS password can be retrieved from a well known file
+in the IAS_ORACLE_HOME stack. For release 12.1.x, it is necessary to connect
+to the database to decrypt the APPS password.
+.P
+Connection credentials are retrieved from the context file (if it exists).
+In this case a common error (possibly as a result of cloning)
+is that the Applications Tier context file has the
+incorrect value for the remote database OS user specified as \f5s_dbuser\f1.
+This will result in the message:
+.nf
+.sp
+.ft 5
+  getappspass: current user not owner of database tier (xxxxxxx)
+.sp
+.fi
+.P
+It will be necessary to correct the value in the context file in order to
+proceed.
+.SH OPTIONS
+.TP
+\f3\-f\f1
+If the e-Business Suite is 11.5.?, force a connection to the database to
+retrieve the password rather than inspect well-known configuration files.
+Useful, for example in the event that the password has changed
+and AutoConfig has yet to be run.
+.TP
+\f3\-h \f2oracle_home\f1
+If forcing a connection to a database (with \f3-f\f1) but a context file
+cannot be found, the \f5ORACLE_HOME\f1 can be supplied.
+.TP
+\f3\-o\f1
+As \f3\-h\f1, but take \f5ORACLE_HOME\f1 from oratab.
+.TP
+\f3\-s \f2sid\f1
+Specify the name of the eBusiness system.
+If this is a RAC instance and a context file cannot be found, it may be
+necessary to specify the actual SID rather than the value for \f5s_dbGlnam\f1, 
+\f5s_systemname\f1, \f5s_dbService\f1 used in the context file.
+.SH SEE ALSO
+.BR ssh (1)
+.SH NOTES
+ssh authentication must have been set up between the current host and the
+database host defined as \f5s_dbhost\f1 in the context file.
+.SH EXAMPLES
+Run getappspass for ENZO
+.nf
+.sp
+\f5$ \f7getappspass -s ENZO\f5
+hello
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH FILES
+.TP 30
+\f5$APPL_TOP/admin/*.xml\f1
+Applications XML context file
+.TP 30
+\f5$ORACLE_HOME/appsutil/*.xml\f1
+Database XML context file

@@ -1,0 +1,65 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+ fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH dos2ux 1 "05 Jun 2001" ""
+.SH NAME
+dos2ux, ux2dos \- convert ASCII file format between UNIX and DOS
+.SH SYNOPSIS
+\f3dos2ux\f1 \f2file\f1...
+.sp
+\f3ux2dos\f1 \f2file\f1...
+.SH DESCRIPTION
+.IX "dos2ux"
+.P
+\f3dos2ux\f1 and \f3ux2dos\f1 read each specified \f2file\f1 in sequence and
+write it to standard output, converting to UNIX format or to DOS format,
+respectively. Each \f2file\f1 can be in either DOS format or UNIX format for
+either command.
+.P
+If no input file is given or if a \f2file\f1 is specified as \f3-\f1,
+\f3dos2ux\f1 and \f3ux2dos\f1 read from standard input. Standard input can be
+combined with other files.
+.SH EXAMPLES
+.P
+Print \f2myfile\f1 on the display:
+.nf
+.sp
+	\f3dos2ux\f1 \f2myfile\f1
+.fi
+.P
+Convert \f2file1\f1 and \f2file2\f1 to DOS format; then concatenate them
+together placing them in \f2file3\f1:
+.nf
+.sp
+	\f3ux2dos\f1 \f2file1\f1 \f2file2\f1 > \f2file3\f1
+.fi
+.SH RETURN VALUE
+\f3dos2ux\f1 exits with one of the following values:
+.RS
+.TP
+\f30\f1
+Successful.
+.TP
+\f32\f1
+Failure. The only possible failure is the inability to open a specified file,
+in which case the ocmmand prints a warning.
+.RE
+.SH WARNINGS
+.P
+Commands resembling:
+.nf
+.sp
+	\f5dos2ux\f1 \f2file1\f1 \f2file2\f1 \f5> \f2file1\f1 
+.fi
+.P
+Overwrite the contents of \f2file1\f1 before the concatenation begins, causing
+a loss of the the contents of \f2file1\f1.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)

@@ -1,0 +1,61 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH adcpusr 1 "05 Jun 2001" ""
+.SH NAME
+adcpusr \- return the name and password of the concurrent manager operator
+.SH SYNOPSIS
+\f3adcpusr\f1
+[\f3-s \f2s_systemname\f1] [\f3-p \f2apps_password\f1 [\f3-c \f2cp_user\f1]] [\f3-m\f1]
+.SH DESCRIPTION
+.IX "adcpusr"
+.P
+\f3adcpusr\f1 returns the name and password of the FND user defined as the
+concurrent manager operator \f2s_cp_user\f1 in the context file for the
+oracle eBusiness system known as \f2s_systemname\f1 in the form:
+.IP
+\f2user\f1/\f2password\f1
+.P
+If this user does not exist he will be created, along with being granted the responsibilty
+with the value of \f2s_cp_resp_name\f1 in the application group
+\f2cp_resp_shortname\f1 as defined in the context file.
+.P
+Typically \f2s_cp_resp_name\f1 should be 'Concurrent Manager Operator' from
+the application group \f2cp_resp_shortname\f1 'FND'.
+.SH OPTIONS
+.TP
+\f3\-p \f2appspass\f1
+Required for first invocation of this program for \f2s_systemname\f1.
+.TP
+\f3\-c \f2user\f1
+Change the user defined as \f2s_cp_user\f1 in the applications context file to \f2user\f1. Additionally
+set \f2s_cp_resp_name\f1='Concurrent Manager Operator' and
+\f2cp_resp_shortname\f1='FND'. Create the FND user if necessary and grant the
+privilege.
+.TP
+\f3\-m\f1
+Use
+.BR makekey (1)
+to generate the operator password.
+.SH EXAMPLES
+.P
+Add "bert" as the concurrent manager operator.
+.nf
+.sp
+\f5$ \f7adcpusr -s DEV -c bert -p ****\f5
+.fi
+.SH WARNINGS
+.P
+Each time \f3adcpusr\f1 is run the password for \f2s_cp_user\f1 is changed.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR adctl (1M),
+.BR adsvcctl (1M)

@@ -1,0 +1,105 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH rwid 1 "05 Jun 2001" ""
+.SH NAME
+rwid \- print value of RapidWiz installation owner
+.SH SYNOPSIS
+\f3rwid\f1 [\f3-1\f1]
+[\f3-i\f1|\f3\-f\f2file\f1|\f3-p\f2pattern\f1...|[\f3-d\f2path\f1][\f3-o\f2path\f1]] \f2s_systemname\f1
+.SH DESCRIPTION
+.IX "rwid"
+The \f3rwid\f1 command 
+is useful to employ in shell scripts where the name of the owner of
+a RapidWiz installation for \f2s_systemname\f1 is to be determined.
+.P
+\f3rwid\f1 uses
+.BR rwtop (1)
+to determine the value of \f5DB_TOP\f1 (or \f5ORA_TOP\f1) for \f2s_systemname\f1 and
+then searches for
+the set-userid executable file \f5oracle\f1 for which to examine ownership.
+.P
+\f3rwid\f1 first attempts to search for the \f5oracle\f1 executable in
+\f5DB_TOP\f1 if it exists (this can be explicitly provided with the \f3-d\f1
+option.) If no such file exists, the search continues with \f5ORA_TOP\f1 and
+looks for a well known object file, such as \f5rdbms/lib/xaonsl.o\f1.
+.SH OPTIONS
+.TP
+\f3\-1\f1
+Ordinarily, for all paths other than \f5DATA_TOP\f1s, if multiple paths 
+are found an error is returned. This option overrides this behaviour and returns
+the valid first path found. To determine the valid path which corresponds to
+the user id returned use \f3rwtop -v ...\f1.
+.TP
+\f3\-v\f1
+Verbose logging turned on. Print list of all paths visited on standard error.
+.TP
+\f3\-f \f2file\f1
+.TP
+\f3\-p \f2pattern\f1
+These options are passed to 
+.BR rwtop (1)
+which \f3rwid\f1 uses to determine \f5DB_TOP\f1 and/or \f5ORA_TOP\f1.
+.TP
+\f3\-d \f2path\f1
+The path of DB_TOP can be supplied as \f2path\f1. This,
+unlike the \f3-f\f1 and \f3-p\f1 options, must be a pathname and
+contain no metacharacters. That is:
+.P
+.RS 10
+\f5rwid -d /u07/app/oracle/ep34db EP34\f1
+.RE
+.IP
+is acceptable since it is a single path. As is:
+.LP
+.RS 10
+\f5rwid -d /u07/app/oracle/*db EP34\f1
+.RE
+.IP
+if it expands to a single pathname in the current shell. Likewise:
+.P
+.RS 10
+\f5rwid -d /u??/app/oracle/ep34db EP34\f1
+.RE
+.IP
+if this expands to a single path.
+.IP
+However, the following are not valid:
+.P
+.RS 10
+\f5rwid -d '/u??/app/oracle/ep34db' EP34\f1
+.RE
+.IP
+is a quoted string containing metacharacters (which will therefore not be 
+expanded by the shell); and
+.P
+.RS 10
+\f5rwid -d /u??/app/oracle/* EP34\f1
+.RE
+.IP
+which expands to a number of paths.
+.TP
+\f3\-o \f2path\f1
+The same function as for \f3-d\f1 except that \f2path\f1 is \f5ORA_TOP\f1.
+.SH FILES
+.PD 0
+.TP 20
+\f5$ORA_TOP/*/bin/oracle\f1
+.TP 20
+\f5$ORA_TOP/*/rdbms/lib/xaonsl.o\f1.
+.TP 20
+\f5$DB_TOP/*/bin/oracle\f1
+Installation owner will own these files
+.PD
+.SH "SEE ALSO"
+.BR rwtop (1)
+.SH DIAGNOSTICS
+If \f3rwid\f1 cannot determine the owner of \f2s_systemname\f1 a non-zero status
+is returned.

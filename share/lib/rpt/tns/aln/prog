@@ -1,0 +1,74 @@
+#!/bin/sh -
+#ident $Header$
+PATH=/bin:/usr/bin export PATH
+
+prog=`basename \`dirname $0\``
+usage="[-p] [-u|-b]"
+
+while getopts pub opt 2>&-
+do
+	case $opt in
+	p)	pflg=y				# no effect
+		;;
+	u|b)
+		uflg=y				# no effect
+		;;
+	\?)	errflg=y
+	esac
+done
+shift `expr $OPTIND - 1`
+
+[ $errflg ] && { echo usage: $prog $usage >&2; exit 2; }
+[ $UTIL_DIR ] || { echo $prog: UTIL_DIR not set >&2; exit 1; }
+
+script=ad${prog}ctl
+
+if [ "$ID" ]
+then
+	id=$ID
+else
+	id=`expr "\`id\`" : '[^(]\{1,\}(\([^ ]\{1,\}\))'` 
+fi
+
+case $prog in
+dln)	UTIL_DIR=$ORACLE_HOME/appsutil/scripts/$DBCTX
+		;;
+aln)	:
+esac
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi
+
+eval `grep -s ORA_ENVFILE= $UTIL_DIR/$script.sh`
+
+if [ $ORA_ENVFILE ]
+then
+	if [ ! -f $ORA_ENVFILE ]
+	then
+		echo "$prog: environment file '$ORA_ENVFILE' not found" >&2
+		exit 1
+	else
+		. $ORA_ENVFILE
+	fi
+else
+	echo "$prog: cannot determine ORA_ENVFILE from $script.sh" >&2
+	exit 1
+fi
+
+
+case $prog in
+dln)	password=`sed -n 's;PASSWORDS_.*= *\(.*\) *;\1;p' $TNS_ADMIN/listener.ora`
+
+		# if report is run from DB node we will need this:
+		[ ! "$TWO_TASK" -a ! "$TWO_TASK_CP" ] && TWO_TASK=$ORACLE_SID
+		lsnrctl <<-!
+			set current_listener $ORACLE_SID
+			${password:+set password $password}
+			status
+		!
+		;;
+aln)	lsnrctl status APPS_$ORACLE_SID ;;
+esac

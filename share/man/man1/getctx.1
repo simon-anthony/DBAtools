@@ -1,0 +1,82 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH getctx 1 "09 Nov 2009" ""
+.SH NAME
+getctx \- locate context file for e-Business node
+.SH SYNOPSIS
+\f3getctx\f1
+[\f3-a\f1[\f3-r\f1|\f3-p\f1]|\f3-d\f1[\f3-v\f2n\f1]] \f3-f \f2context_file\f1 | \f3-s \f2s_systemname\f1 [\f3-D \f2dir\f1] [\f3-A \f2dir\f1]
+.SH DESCRIPTION
+.IX "getctx"
+.P
+\f3getctx\f1 locates a context file for either a database or application
+server node associated with \f2s_systemname\f1.
+.SH OPTIONS
+.TP
+\f3\-a\f1
+Context file located will be that associated with the applications tier.
+It will be validated that the header contains "adxmlctx". This is the 
+default should neither \f3-a\f1 or \f3-d\f1 be specified.
+.RS
+.TP
+\f3\-r\f1
+Print only the (run) applications tier context if found (otherwise exit with error.) R12.2+ only.
+This is the default if not specified.
+.TP
+\f3\-p\f1
+Print only the (patch) applications tier context if found (otherwise exit with error.) R12.2+ only.
+.RE
+.TP
+\f3\-d\f1
+Context file located will be that associated with the database tier. It will
+be validated that the header contains "adxdbctx".
+.TP
+\f3\-v \f2n\f1
+Constrain the database to be version \f2n\f1 when searching for a database
+context file.
+.TP
+\f3\-f \f2path to context file\f1
+Use \f2path to context file\f1 as the context file. This can be used to
+validate the presence and type of context file.
+.TP
+\f3\-s \f2s_systemname\f1
+Use \f2s_systemname\f1 as the name of the installation for which to search for context
+files 
+.TP
+\f3\-D \f2dir\f1
+Constrain the search for DBCTX to begin in the DB_TOP specified for
+\f2dir\f1.
+.TP
+\f3\-A \f2dir\f1
+Constrain the search for APPCTX to begin in the APPL_TOP specified for
+\f2dir\f1.
+.SH EXAMPLES
+.SS Find Applications Tier Context File
+.P
+An example of invocation might be:
+.P
+.nf
+.sp
+\f5$ \f7getctx -s ENZO\f5
+/u25/app/ENZO/apps/admin/ENZO_tigger.xml
+.fi
+.SS Find the Database Tier Context File
+.P
+With the \f3-d\f1 option, we might get
+.nf
+.sp
+\f5$ \f7getctx -d -s ENZO\f5
+/u25/app/ENZO/oracle/11.1.0/appsutil/ENZO2_tigger.xml
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR ctx (1)

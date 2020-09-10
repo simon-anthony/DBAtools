@@ -1,0 +1,117 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH ctx 1 "05 Jun 2001" ""
+.SH NAME
+ctx \- locate e-Business Suite "context" file
+.SH SYNOPSIS
+\f3ctx\f1
+[\f3-a\f1[\f3-r\f1|\f3-p\f1]|\f3-d\f1|\f3-i\f1] [{\f3-A\f1|\f3-I\f1|\f3-D\f1} \f2dir\f1]... [\f3-n\f1] [\f3-f\f1] [\f3-x\f1] [\f3-v\f2n\f1] [\f3-h\f2host\f1]... [\f3-s \f2s_systemname\f1]
+.SH DESCRIPTION
+.IX "ctx"
+.P
+\f3ctx\f1 locates the context files associated with the Oracle
+Applications instance named \f2s_systemname\f1. It does this by
+checking for likely names of the file and by examing the XML 
+entries themselves.
+.SH OPTIONS
+.TP
+\f3\-a\f1
+Print only the applications tier context if found (otherwise exit with error.)
+.RS
+.TP
+\f3\-r\f1
+Print only the (run) applications tier context if found (otherwise exit with error.) R12.2+ only.
+This is the default if not specified.
+.TP
+\f3\-p\f1
+Print only the (patch) applications tier context if found (otherwise exit with error.) R12.2+ only.
+.RE
+.TP
+\f3\-d\f1
+Print only the database tier context if found (otherwise exit with error.)
+.TP
+\f3\-i\f1
+Print information about the node.
+.TP
+\f3\-A \f2dir\f1
+Constrain the search for APPCTX to begin in the APPL_TOP specified for
+\f2dir\f1.
+.TP
+\f3\-I \f2dir\f1
+Constrain the search for APPCTX to begin in the INST_TOP specified for
+\f2dir\f1 (R12).
+.TP
+\f3\-D \f2dir\f1
+Constrain the search for DBCTX to begin in the DB_TOP specified for
+\f2dir\f1.
+.TP
+\f3\-n\f1
+Do not print in "variable" format. That is the line is not preceded by a
+variable assignment, "DBCTX=" for database context files, "APPCTX=" for
+applications context files.
+.TP
+\f3\-f\f1
+Display the full path to the context file, rather than just the context 
+name.
+.TP
+\f3\-x\f1
+Display verbose output about the searches made for the context file.
+Useful for debugging.
+.TP
+\f3\-h \f2host\f1
+Add \f2host\f1 to the list of hostnames used for generating the potential
+context file name in addition to the defaults. Can occur multiple times.
+Possibly useful for finding the context file for a source system copied to
+another server for cloning.
+.TP
+\f3\-v \f2n\f1
+When searching for the database context file constrain the version of the
+database searched for to be no greater
+than \f2n\f1, where \f2n\f1 is an integer.
+.TP
+\f3\-s \f2s_systemname\f1
+Specify the name of the E-Business system. Otherwise taken from the environment.
+.SH EXAMPLES
+Display the context names:
+.nf
+.sp
+\f5$ \f7ctx -s FOO\f5
+APPCTX=FOO_pluto
+DBCTX=FOO1_venus
+.fi
+.P
+Display the path to the context files:
+.nf
+.sp
+\f5$ \f7ctx -f -s FOO\f5
+APPCTX=/u93/app/FOO/apps/admin/FOO_pluto.xml
+DBCTX=/u93/app/FOO/oracle/11.1.0/appsutil/FOO1_venus.xml
+.fi
+.P
+The output can be used to set the variables, for example:
+.nf
+.sp
+\f5$ \f7eval `ctx -f -s FOO`\f5
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH FILES
+.TP 30
+\f5$APPL_TOP/admin/*.xml\f1
+Applications XML context file (11i)
+.TP 30
+\f5$INST_TOP/appl/admin/*.xml\f1
+Applications XML context file (R12)
+.TP 30
+\f5$ORACLE_HOME/appsutil/*.xml\f1
+Database XML context file
+.SH SEE ALSO
+.BR adstatus (1)

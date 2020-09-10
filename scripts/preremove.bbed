@@ -1,0 +1,15 @@
+#/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running preremove script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+SW_LOCATION=/opt/oracle	# we set this since the package was formerly locatable
+
+msg NOTE "Removing links in \"$SW_LOCATION/lib\""
+cd ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/lib || exit 1
+rm -f sbbdpt.o ssbbded.o
+
+exit 0

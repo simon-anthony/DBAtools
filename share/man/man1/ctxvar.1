@@ -1,0 +1,185 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH ctxvar 1 "09 Nov 2009" ""
+.SH NAME
+ctxvar \- extract or update oa_var context variable from file
+.SH SYNOPSIS
+\f3ctxvar\f1 [\f3-i\f1] [\f3-f\f1]
+[[\f3-v\f1|\f3-p\f1] \f2variable\f1] [\f2context_file\f1]
+.sp
+\f3ctxvar\f1 [\f3-i\f1] [\f3-f\f1]
+\f3-e\f1 \f2variable\f1=\f2value\f1... [\f2context_file\f1]
+.SH DESCRIPTION
+.IX "ctxvar"
+.P
+\f3ctxvar\f1 extracts all variables from the context file
+\f2context_file\f1 (or from the file defined by the value of the
+environment variable \f5CONTEXT_FILE\f1 if \f2context_file\f1 is not
+specified, or from the standard input if \f5CONTEXT_FILE\f1 is not set).
+If \f2variable\f1 is specified only the context variable matching this
+and its value is extracted.
+.P
+If the \f3-e\f1 option is used the variable \f2variable\f1 is assigned
+the value \f2value\f1 in the updated context file \f2context_file\f1. If
+\f2context_file\f1 is not specified on the command line (even if the environment variable
+\f5CONTEXT_FILE\f1 is set) then the updated context file is sent
+to standard output.
+.P
+Note that the context file is parsed in its entirity by this command.
+Any syntax errors in the file will be highlighted.
+.SH OPTIONS
+.TP
+\f3\-i\f1
+Ignore the environment variable \f5CONTEXT_FILE\f1.
+.TP
+\f3\-f\f1
+Insist that a context file is specified - either on the command line as
+\f2context_file\f1 or (unless \f3-i\f1 is present) by the environment
+variable \f5CONTEXT_FILE\f1. In other words: do not read standard input.
+.TP
+\f3\-v\f1
+Print the variable name as well as the value in the form of a shell
+assignment.
+.TP
+\f3\-p\f1
+The variable name \f2variable\f1 is taken to be a basic regular expression
+(see
+.BR regexp (5))
+and all matching context variables are returned in the form described for
+the \f3-v\f1 option. The case is ignored in the match.
+.TP
+\f3\-e \f2variable\f1=\f2value\f1
+The variable named \f2variable\f1 is set to the value of \f2value\f1.
+.IP 
+If the following are true:
+.RS
+.IP \(bu
+\f2context_file\f1 is not specified on the command line
+.IP \(bu
+the environment variable \f5CONTEXT_FILE\f1 is not set
+.RE
+.IP
+then the context file is read from standard input and the updated context file
+is sent to standard output.
+.IP
+If the following are true
+.RS
+.IP \(bu
+\f2context_file\f1 is not specified on the command line
+.IP \(bu
+the environment variable \f5CONTEXT_FILE\f1 is set
+.RE
+.IP
+then \f5$CONTEXT_FILE\f1 is read and the updated context file
+is sent to standard output.
+.IP
+In other words, only when a context file \f2context_file\f1 is specified on the
+command line is it edited directly.
+.IP
+Note the modification of context variables which
+do not presently have a value in the context file is not possible.
+.IP
+This option can be present for multiple variable assignments.
+.SH RETURN VALUE
+\f3ctxvar\f1 exits with one of the following values:
+.RS
+.TP
+\f30\f1
+The named oa_var variable was found (and updated if \f3-e\f1 was specified)
+or all contents were listed.
+.TP
+\f31\f1
+The named oa_var variable was not found or an error was raised.
+.TP
+\f32\f1
+Usage error.
+.TP
+\f35\f1
+Syntax error in \f3context_file\f1.
+.RE
+.SH EXAMPLES
+.SS Print a Variable's Values
+.P
+An example of invocation might be:
+.P
+.nf
+.sp
+.RS
+\f5$ \f7ctxvar s_db_sga_target $CONTEXT_FILE\f5
+1G
+.RE
+.fi
+.SS Print Variable Assignment
+.P
+With the \f3-v\f1 option, we would get:
+.nf
+.sp
+.RS
+\f5$ \f7ctxvar -v s_db_sga_target $CONTEXT_FILE\f5
+s_db_sga_target=1G
+.RE
+.fi
+.SS Ignore Environmental Settings
+.P
+With the \f3-i\f1 option we can ensure that the context file
+is read from the standard input we supply
+.nf
+.sp
+.RS
+\f5$ \f7ctxvar -i -v s_db_sga_target < myctx.xml\f5
+s_db_sga_target=1G
+.RE
+.SS Usage in Shell Scripts
+.P
+To extract a variable to use in shell scripts we might do the following:
+.nf
+.sp
+.ft 7
+.RS
+if eval `ctxvar -v s_db_oh $CONTEXT_FILE`
+then
+	echo ORACLE_HOME is $s_db_oh
+else
+	echo ERROR: ORACLE_HOME cannot be determined >&2
+fi
+.RE
+.ft 1
+.fi
+.SS Pattern Matching Usage
+.P
+To extract all variables named starting "s_disco" and ending in either
+"status" or "name" (note case insensitivity):
+.nf
+.sp
+.ft 7
+.RS
+\f5$ \f7ctxvar -p 's_disco(STATUS|NAME)' $CONTEXT_FILE\f5
+s_disconame='Oracle Discoverer services SID_server'
+s_discostatus=enabled
+.RE
+.ft 1
+.fi
+.SS Updating the Context File
+.P
+To update the value of the context variable defining the ORACLE_HOME
+\f5s_db_oh\f1:
+.nf
+.sp
+.ft 7
+.RS
+\f5$ \f7ctxvar -e s_db_oh=/opt/oracle/product/11.1.0 $CONTEXT_FILE\f5
+.RE
+.ft 1
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR ctx (1)

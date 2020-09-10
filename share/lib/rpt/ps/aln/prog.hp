@@ -1,0 +1,138 @@
+#!/bin/sh -
+#ident $Header: DBAtools/trunk/share/lib/rpt/ps/aln/prog.hp 175 2017-10-25 16:25:35Z xanthos $
+
+PATH=/bin:/usr/bin export PATH
+
+prog=`basename \`dirname $0\``
+usage="[-p] [-u|-b]"
+
+filter="cat -"
+
+while getopts pub opt 2>&-
+do
+	case $opt in
+	p)	pflg=y				# use ps(1) rather than PID file
+		;;
+	u|b)
+		uflg=y				# use 'ptree' style output
+		;;
+	\?)	errflg=y
+	esac
+done
+shift `expr $OPTIND - 1`
+
+[ $errflg ] && { echo usage: $prog $usage >&2; exit 2; }
+[ $UTIL_DIR ] || { echo $prog: UTIL_DIR not set >&2; exit 1; }
+
+script=ad${prog}ctl
+
+if [ "$ID" ]
+then
+	id=$ID
+else
+	id=`expr "\`id\`" : '[^(]\{1,\}(\([^ ]\{1,\}\))'` 
+fi
+
+case $prog in
+dln)	UTIL_DIR=$ORACLE_HOME/appsutil/scripts/$DBCTX
+		;;
+aln)	:
+esac
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi
+
+# ptreefmt:
+#   Input: 'ps -H -o pid,args'               Output: 'ptree'
+#   ^12345 xxxx                              ^12345 xxxx
+#   ^ 2345 abc                               ^   2345 abc
+#   ^ 3456   xyz                             ^   3456 xyz
+#   ^ 4356   uvw                             ^   4356 uvw
+#   ^ 4776     abc                           ^     4776 abc
+ptreefmt() {
+	awk '
+	{
+		match($0, /^[ ]*[0-9]+[ ]+/)
+
+		if (RLENGTH == 6) {	# root parent
+			print 
+			next
+		}
+		indent = (RLENGTH - 6)/2
+		printf("%s%5d %s\n", pad(indent), $1, substr($0, RLENGTH+1))
+
+	}
+	function pad(n,  b) {
+		b =  ""
+		for (i = 0; i < n; i++) 
+			b = b "  "
+		return b
+	}'
+}
+
+if [ $uflg ]
+then
+	filter=ptreefmt
+fi
+
+if [ $prog = dln ]		# status not yet implemented for dln script
+then
+	eval `grep -s ORA_ENVFILE= $UTIL_DIR/$script.sh`
+
+	if [ $ORA_ENVFILE ]
+	then
+		if [ ! -f $ORA_ENVFILE ]
+		then
+			echo "$prog: environment file '$ORA_ENVFILE' not found" >&2
+			exit 1
+		else
+			. $ORA_ENVFILE
+		fi
+	else
+		echo "$prog: cannot determine ORA_ENVFILE from $script.sh" >&2
+		exit 1
+	fi
+	password=`sed -n 's;PASSWORDS_.*= *\(.*\) *;\1;p' $TNS_ADMIN/listener.ora`
+
+	# if report is run from DB node we will need this:
+	[ ! "$TWO_TASK" -a ! "$TWO_TASK_CP" ] && TWO_TASK=$ORACLE_SID
+	ports=`lsnrctl <<-! | sed -n "/P[Oo][Rr][Tt]=/s;.*(P[Oo][Rr][Tt]=\([^)]*\)).*;${TWO_TASK:-$CP_TWO_TASK}=\1;p" | sort -u
+		set current_listener $ORACLE_SID
+		set password $password
+		status
+	!`
+	listener_name=${TWO_TASK:-$CP_TWO_TASK}
+else					# aln
+	ports=`sh $UTIL_DIR/$script.sh status |
+		sed -n "/Connecting to/s;.*(Port=\(.*\))).*;APPS_${TWO_TASK:-ORACLE_SID}=\1;p"`
+	eval `egrep -s "^[ 	]*listener_name=" $UTIL_DIR/$script.sh`
+fi
+
+echo Configured ports: `echo $ports | sed 's;=\([^ 	]\{1,\}\);='$CAP'\1'$CAPOFF';g'`
+
+set -a
+eval $ports
+set +a
+
+echo Processes:
+
+UNIX95=1 ps -Hxu $id -o pid,args | sed -n '
+/^ *[0-9]\{1,\} [^ ]*'"tnslsnr $listener_name"'/ {
+	p; n;
+	: loop1
+	/^ *[0-9]\{1,\}   */ {
+		p; n;
+		b loop1
+	}
+}
+/^ *[0-9]\{1,\} [^ ]*'"tnslsnr `echo $listener_name|tr \'[:upper:]\' \'[:lower:]\'`"'/ {
+	p; n;
+	: loop2
+	/^ *[0-9]\{1,\}   */ {
+		p; n;
+		b loop2
+	}
+}' | $filter

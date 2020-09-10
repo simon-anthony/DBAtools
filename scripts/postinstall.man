@@ -1,0 +1,33 @@
+#/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running postinstall (man) script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+SW_LOCATION=/opt/oracle # we set this since the package was formerly locatable
+
+files="adstart.1m adstatus.1 rwtop.1 adps.1 adstop.1m adtns.1 dbstart.1m dbshut.1m lsnrstart.1m lsnrstop.1m adsvcctl.1m getprb.1 ckoper.1"
+
+for file in $files
+do
+	msg NOTE "Fixing \"$file\""
+	ex -s ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/share/man/man1/$file <<-!
+		g/BASEDIR/s;BASEDIR;${SW_LOCATION%/};g
+		w!
+	!
+done
+
+files="getoavar.3 setoavar.3"
+
+for file in $files
+do
+	msg NOTE "Fixing \"$file\""
+	ex -s ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/share/man/man3/$file <<-!
+		g/BASEDIR/s;BASEDIR;${SW_LOCATION%/};g
+		w!
+	!
+done
+
+exit 0

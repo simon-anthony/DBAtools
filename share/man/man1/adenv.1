@@ -1,0 +1,186 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH adenv 1 "22 Sep 2000"
+.tr ~
+.SH NAME
+adenv \- set up environment for Oracle/Applications
+.SH SYNOPSIS
+.SS Korn Shell
+.nf
+\f3\&. adenv\f1 [\f3-a\f1[\f3-x\f1]] [\f3-nvpht\f1] [\f2sid\f1]
+\f3\&. adenv\f1 \f3-d\f1[\f3-ow\f1] [\f3-nvpht\f1] [\f2sid\f1]
+\f3\&. adenv\f1 \f3-i\f1[\f3-o\f1] [\f3-nvpht\f1] [\f2sid\f1]
+.fi
+.SS Bourne Shell
+.nf
+\f1[\f5ORACLE_SID=\f2sid\f1][\f5TWO_TASK=\f2sid\f1] \f3\&. adenv\f1
+.fi
+.SH DESCRIPTION
+.IX "adenv" "" "\fLadenv\fP \(em set environment ORACLE"
+\f3adenv\f1 is used to modify a user's environment for access to
+an ORACLE database. It must be supplied with a value for the new \f2sid\f1.
+.P
+\f3adenv\f1 is intended as a replacement for 
+.BR oraenv (1)
+in 11i/R12 eBusiness environments.
+.P
+It uses the environment files created by a standard RapidInstall
+autoconfig configuration rather than using 
+.BR oratab (4)
+to determine the \f5ORACLE_HOME\f1.
+.P
+The Bourne shell does not support the passing of arguments to "sourced" files.
+Shell (or environment) variables must be used to supply the \f2sid\f1:
+.TP
+\f5TWO_TASK\f1
+This implies \f3-a\f1.
+.TP
+\f5ORACLE_SID\f1
+This implies \f3-d\f1. Although if \f5TWO_TASK\f1 is set it will override this.
+To ensure that \f5ORACLE_SID\f1 (and \f3-d\f1) is used under these
+circumstances, unset \f5TWO_TASK\f1:
+.nf
+.sp
+\f5$ \f7TWO_TASK= ORACLE_SID=PRD . adenv\f1
+.fi
+.P
+The Internet Application Server \f5ORACLE_HOME\f1 cannot be set from the
+Bourne shell.
+.SH OPTIONS
+.TP
+\f3-a\f1
+Search for the environment file for the Applications \f5ORACLE_HOME\f1 to 
+source. The is the default behaviour.
+This ORACLE_HOME corresponds to the s_tools_oh context variable.
+.TP
+\f3-d\f1
+Search for the environment file for the "Database" \f5ORACLE_HOME\f1 to source.
+This ORACLE_HOME corresponds to the s_db_oh context variable.
+.TP
+\f3-i\f1
+Search for the environment file for the "iAS" \f5ORACLE_HOME\f1 to source.
+This corresponds to the s_weboh_oh context variable.
+.TP
+\f3-o\f1
+If the \f3-d\f1 option is specified the applications environment file will not
+be sourced. Obsolete, this option is implied by \f3-d\f1.
+.TP
+\f3-w\f1
+Warning about missing entries for the database in the oratab file.
+.TP
+\f3-x\f1
+Normally the file:
+.nf
+	\f5$APPL_TOP/APPS${TWO_TASK}_`hostname`\f5.env\f1
+.fi
+will be searched for in preference to sourcing the files individually:
+.nf
+	\f5$ORA_TOP/${TWO_TASK}_`hostname`.env\f1
+	\f5$APPL_TOP/${TWO_TASK}_`hostname`\f5.env\f1
+.fi
+This option suppresses that behaviour.
+.TP
+\f3-v\f1
+Verbose. Ordinarily \f3adenv\f1 does not inform the user of the settings made.
+Presence of this option prints a short summary of changes made to the
+environment.
+.TP
+\f3-n\f1
+Ordinarily, if the environment variable \f5TWO_TASK\f1 is set then the
+environment variable \f5ORACLE_SID\f1 will be unset. 
+Specifying \f3-n\f1 overrides this behaviour.
+.TP
+\f3-p\f1
+If you have completely hosed your environment, supplying this option will
+re-read the files \f5/etc/profile\f1 and \f5$HOME/.profile\f1 (in that order)
+before setting the Oracle environment
+in attempt to re-instate the correct environment. This does presuppose that 
+these environment files behave in a standard manner. eg \f5PATH\f1 will not be
+repeatedly recursively set through the use of these files and is expliclitly
+set in at least one of these files (in this instance usually
+\f5/etc/profile\f1.)
+.TP
+\f3-h\f1
+Prefix the hostname to the PS1 prompt.
+.TP
+\f3-t\f1
+Set the terminal title if possible.
+.SH FILES
+.PD 0
+.TP 30
+\f5/var/opt/oracle/oratab\f1
+oratab file on System V.4
+.TP 30
+\f5/etc/oratab\f1
+oratab file on other systems
+.TP 30
+\f5$ORA_TOP/\f2version\fP\f5/${TWO_TASK}_`hostname`.env\f1
+Environment file for APPL_TOP ORACLE_HOME (8.0.6)
+.TP 30
+\f5$ORA_TOP/iAS/${TWO_TASK}_`hostname`.env\f1
+Environment file for iAS ORACLE_HOME 
+.TP 30
+\f5$DB_TOP/\f2version\fP\f5/${ORACLE_SID}_`hostname`.env\f1
+Environment file for Database ORACLE_HOME (8i/9i)
+.TP 30
+\f5$APPL_TOP/${TWO_TASK}_`hostname`.env\f1
+Environment file for APPL_TOP
+.TP 30
+\f5$APPL_TOP/custom${TWO_TASK}_`hostname`.env\f1
+Environment file for customisations in APPL_TOP
+.TP 30
+\f5$APPL_TOP/${TWO_TASK}.env\f1
+Copy of above (Environment file for APPL_TOP) for adrelink.sh
+.TP 30
+\f5$APPL_TOP/APPSORA.env\f1
+Sources environment file for APPL_TOP and APPL_TOP ORACLE_HOME for the 
+default system
+.TP 30
+\f5$APPL_TOP/APPS${TWO_TASK}_`hostname`\f5.env\f1
+APPSORA.env for environment ${TWO_TASK}
+.PD
+.SH ENVIRONMENT
+The variables \f5SG_ORACLE_SID\f1 and \f5SG_TWO_TASK\f1 can be set to be the
+colour of the \f5ORACLE_SID\f1 and \f5TWO_TASK\f1 variables respectively as
+they appear in the \f5PS1\f1 string.
+.P
+Valid colours are those supported by the VT colour system. That is:
+.IR black ,
+.IR red ,
+.IR green ,
+.IR yellow ,
+.IR blue ,
+.IR magenta ,
+.IR cyan ,
+.IR white
+.P
+Specifiying an invalid colour will result in the colour \f2black\f1 being
+used.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR ctxvar (1),
+.BR ksh (1),
+.BR sh (1),
+.BR rwtop (1),
+.BR oratab (4)
+.SH NOTES
+.P
+The environment files sourced by \f3adenv\f1 change the \f5PATH\f1
+environment variable to contain the new 
+\f5$ORACLE_HOME/bin\f1, and remove the previous \f5$ORACLE_HOME/bin\f1. 
+Therefore, it is not necessarily sufficient to change the values for 
+\f5ORACLE_HOME\f1 and \f5ORACLE_SID\f1 to access a different ORACLE database.
+.P
+Since 
+.BR sh (1)
+does not support arguments to sourced files only the second form of the
+command is available when using this shell. The extra options are therefore not
+available in the Bourne shell. 

@@ -1,0 +1,155 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH dbacmd 1M "12 Aug 1998"
+.tr ~
+.SH NAME
+dbacmd \- return correct command to start/stop oracle
+.SH SYNOPSIS
+.nf
+\f3dbacmd\f1 [\f3-nd\f1] \f3shutdown\f1 [\f3immediate\f1|\f3abort\f1|\f3normal\f1|\f3transactional\f1 [\f3local\f1]]
+.\"\f3dbacmd\f1 [\f3-nd\f1] \f3startup\f1 [\f3force\f1] [\f3restrict\f1] [\f3pfile=\f2file\f1] [\f3quiet\f1] [\f3mount\f1|\f3open\f1 [\f3read \f1{\f3only\f1|\f3write\f1}]|\f3nomount\f1]
+\f3dbacmd\f1 [\f3-nd\f1] \f3startup\f1 \f2options\f1 [\f3mount\f1|\f3open\f1 [\f3read \f1{\f3only\f1|\f3write\f1}]|\f3nomount\f1]
+
+  \f2options\f1 = [\f3force\f1] [\f3restrict\f1] [\f3pfile=\f2file\f1] [\f3quiet\f1] 
+.fi
+.SH DESCRIPTION
+.IX "dbacmd" "" "\fLdbacmd\fP \(em print ORACLE_HOME"
+.P
+Running \f3dbacmd\f1 will execute the appropriate program used to start/stop
+an Oracle database depending on its version.
+.P
+The command actually executed could be one of:
+.TP 10
+\f7sqldba\f1
+Used in 5 and 6.
+.TP 10
+\f7svrmgrl\f1
+Introduced in 7. Available in 8. Dropped in 9.
+.TP 10
+\f7sqlplus\f1
+Used in 8.1 (in \f2preference\f1 to \f5svrmgrl\f1) and above.
+.P
+The command used further depends on the version of the database and
+the \f2rules\f1 in force.
+.P
+The version of the database is extracted by running whichever of these
+three commands is first found. The version for comparison purposes will
+be restricted to the first three numbers of the actual version
+obtained. In Dewey decimal notation this is referred to the Release,
+the Level and the Branch: \f2R\f1.\f2L\f1.\f2B\f1.
+.SS Rules
+The file \f5/etc/opt/oracle/dbacmds\f1 contains a list of rules that
+contain which commands to run against which version. The R.L.B
+notation is understood in the matching process. For example, if this
+file contains
+.nf
+.f5
+
+      8.0   A
+      8.1   B
+      8.1.7 C
+      9     D
+.f1
+.fi
+.P
+\f2A\f1 will be run for all versions 8.0.*, \f2C\f1 for all versions 8.1.7
+and \f2B\f1 for all other versions 8.1.*; and \f2D\f1 for all versions 9.*
+.SS Username
+Earlier versions of Oracle use the username "internal" as the name of the 
+OS authorised user. From version 8.1 it is recommended that the 
+new authentication mechanism be used and "/ as sysdba" be the OS authenticated
+user. If \f3dbacmd\f1 determines that the database version is 8.1 or greater
+the latter connection is used. This is the only mechanism currently supported
+for specifying which user to use.
+.SS Root Invocation
+The user attempting to start or stop the oracle server processes (other
+than the owner of the \f5ORACLE_HOME\f1) must be a
+member of the DBA group defined for this \f5ORACLE_HOME\f1. The DBA
+group is defined in \f5$ORACLE_HOME/rdbms/lib/config.s\f1 as mentioned
+below. Commonly this group is "dba".
+.RS 5
+.P
+\f3dbacmd\f1 makes no provision to
+check that the invoking user is a member of this group (for the database
+currently being started or stopped.) As with starting or stopping the database
+"manually" it is the responsibility of the user to determine that he is in
+this group.
+.RE
+.P
+The exception to this is that 
+\f5root\f1 cannot be a member of this group and start and stop the database
+server. To allow \f5root\f1 to start and stop databases \f3dbacmd\f1 performs
+a
+.BR setuid (2)
+to the owner of this \f5ORACLE_HOME\f1 before executing the startup/shutdown
+actions.
+.P
+This behaviour allows
+.BR dbstart (1M)
+and
+.BR dbshut(1M)
+to be used in the system's "rc" scripts.
+.SH OPTIONS
+.TP
+\f3-n\f1
+Do not execute the actions just print a list of that which
+would have been run.
+.TP
+\f3-d\f1
+Debug mode. Print to stderr of detailed actions.
+.SH FILES
+.PD 0
+.TP 30
+\f5/etc/opt/oracle/dbacmds\f1
+Rules file
+.TP 30
+\f5$ORACLE_HOME/rdbms/lib/config.s\f1
+symbol \f5ss_dba_grp\f1 defines dba group name for this \f5ORACLE_HOME\f1
+.PD
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR dbid (1),
+.BR dbvers (1),
+.BR dbstart (1M),
+.BR oratab (4)
+.SH EXAMPLES
+.SS An Applications 11i/12 Database
+.nf
+.sp
+\f5$ \f7dbacmd -n startup\f5
+sh /DB_03/oracle/dbadb/8.1.7.4/appsutil/scripts/DBA_hfx8/addbctl.sh start\f1
+.fi
+.SS A More Typical Oracle Installation
+.nf
+.sp
+\f5$ \f7dbacmd -n shutdown immediate\f5
+/opt/oracle/product/8.1.7.4/bin/svrmgrl  <<-!
+	connect internal
+	shutdown immediate
+!
+.fi
+.RE
+.SS Invoked by Root
+.nf
+.sp
+\f5# \f7dbacmd -n shutdown immediate\f5
+su oracle -c "/opt/oracle/product/9.2.0/bin/sqlplus  <<-!
+	connect / as sysdba
+	shutdown immediate
+!"
+.fi
+.SH NOTES
+This command is for local database instances only. It is not normally intended
+to be invoked directly.
+.P
+Since the oracle kernel does not use paths to search for dynamic libraries any 
+environment variables, such as \f3LD_LIBRARY_PATH\f1, used for searches are
+unset.

@@ -1,0 +1,252 @@
+.\" @(#)ps.1	1.3
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH ps 1 "21 Apr 2007" ""
+.SH NAME
+ps \- variation of ps(1)
+.SH SYNOPSIS
+\f3ps\f1 [\f3-x\f1]
+\f3-p \f2proclist\f1 \f3-o \f2format\f1
+.SH DESCRIPTION
+.IX "ps"
+.P
+This version of \f3ps\f1 requires the \f3-p\f1 and \f3-o\f1 options. Unlike
+the standard 
+.BR ps (1)
+this \f3ps\f1 will list all processes in the order given in \f2proclist\f1
+and print repeated processes if they should appear multiple times. The processes
+will be printed in the order in which they occur in \f2proclist\f1.
+.P
+.SH OPTIONS
+.TP
+\f3-x\f1
+Shows the command line in extended format.
+.TP
+\f3\-p \f2proclist\f1
+Select processes whose process ID numbers are given in \f2proclist\f1.
+.TP
+\f3\-o \f2format\f1
+format is a comma- or space-separated list of the columns to display, in
+the order they should be displayed.  (Valid column names are listed
+below.)  A column name can optionally be followed by an equals sign (=)
+and a string to use as the heading for that column.  (Any commas or
+spaces after the equals sign will be taken as a part of the column
+heading; if more columns are desired, they must be specified with
+additional \f3-o\f1 options.)  The width of the column will be the greater of
+the width of the data to be displayed and the width of the column
+heading.  If an empty column heading is specified for every heading, no
+heading line will be printed.
+.P
+The list used as an argument to the -p option can be specified in one of two forms:
+.IP \(bu
+A list of identifiers separated from one another by a comma.
+.IP \(bu
+A list of identifiers enclosed in quotation marks (") and
+separated from one another by a comma and/or one or more
+spaces.
+.SS Output Options
+.RS
+.TP 15
+\f3addr\f1
+The memory address of the process, if resident;
+otherwise, the disk address.
+.TP 15
+\f3args\f1
+The command line given when the process was
+created.  This column should be the last one
+specified, if it is desired.  Only a subset of the
+command line is saved by the kernel; as much of
+the command line will be displayed as is
+available.  The output in this column may contain
+spaces.  The default heading for this column is
+COMMAND if -o is specified and CMD otherwise.
+.TP 15
+\f3cls\f1
+Process scheduling class. This option prints the scheduling
+classes as named by the
+.BR pstat (2)
+interfaces. For the scheduling classes as defined by 
+.BR rtsched (1)
+use the \f3sched\f1 column. 
+.TP 15
+\f3comm\f1
+The command name.  The output in this column may
+contain spaces.  The default heading for this
+column is COMMAND if -o is specified and CMD
+otherwise.
+.TP 15
+\f3cpu\f1
+Processor utilization for scheduling.  The default
+heading for this column is C.
+.TP 15
+\f3etime\f1
+Elapsed time of the process.  The default heading
+for this column is ELAPSED.
+.TP 15
+\f3flags\f1
+Flags (octal and additive) associated with the
+process:
+.RS 20
+.PD 0
+.TP
+\f3 0\f1
+Swapped
+.TP
+\f3 1\f1
+In core
+.TP
+\f3 2\f1
+System process
+.TP
+\f3 4\f1
+Locked in core (e.g., for physical I/O)
+.TP
+\f310\f1
+Being traced by another process
+.TP
+\f320\f1
+Another tracing flag
+.RE
+.PD
+.TP 15
+\f3intpri\f1
+The priority of the process as it is stored internally by the kernel.
+This column is provided for backward compatibility and its use is not
+encouraged.
+.TP 15
+\f3gid\f1
+The group ID number of the effective process owner.
+.TP 15
+\f3group\f1
+The group name of the effective process owner.
+.TP 15
+\f3nice\f1
+Nice value; used in priority computation (see nice(1)).  The default
+heading for this column is NI.
+.TP 15
+\f3pcpu\f1
+The percentage of CPU time used by this process during the last
+scheduling interval.  The default heading for this column is %CPU.
+.TP 15
+\f3pgid\f1
+The process group ID number of the process group to which this process
+belongs.
+.TP 15
+\f3pid\f1
+The process ID number of the process.
+.TP 15
+\f3ppid\f1
+The process ID number of the parent process.
+.TP 15
+\f3pri\f1
+The priority of the process.  The meaning of the value depends on the
+process scheduling class; see cls, above, and
+.BR rtsched (1).
+.TP 15
+\f3prmid\f1
+The PRM process resource group ID number.
+.TP 15
+\f3prmgrp\f1
+The PRM process resource group name.
+.TP 15
+\f3rgid\f1
+The group ID number of the real process owner.
+.TP 15
+\f3rgroup\f1
+The group name of the real process owner.
+.TP 15
+\f3ruid\f1
+The user ID number of the real process owner.
+.TP 15
+\f3pset\f1
+The processor set ID on which this process is
+running.
+.TP 15
+\f3ruser\f1
+The login name of the real process owner.
+.TP 15
+\f3sched \f1
+The scheduling class as defined by 
+.BR rtsched (1).
+.TP 15
+\f3sid \f1
+The session ID number of the session to which this process belongs.
+.TP 15
+\f3state\f1
+The state of the process:
+.RS 20
+.PD 0
+.TP
+\f30\f1
+Nonexistent
+.TP
+\f3S\f1
+Sleeping
+.TP
+\f3W\f1
+Waiting
+.TP
+\f3R\f1
+Running
+.TP
+\f3I\f1
+Intermediate
+.TP
+\f3Z\f1
+Terminated
+.TP
+\f3T\f1
+Stopped
+.TP
+\f3X\f1
+Growing
+.RE
+.PD
+The default heading for this column is S.
+.TP 15
+\f3stime\f1
+Starting time of the process.  If the elapsed time is greater than 24
+hours, the starting date is displayed instead.
+.TP 15
+\f3sz\f1
+The size in physical pages of the core image of the process,
+including text, data, and stack space.  Physical page size is defined by
+_SC_PAGE_SIZE in the header file <unistd.h> (see sysconf(2) and
+unistd(5)).
+.TP 15
+\f3time\f1
+The cumulative execution time for the process.
+\f3.TP 15\f1
+\f3tty\f1
+The controlling terminal for the process.  The default heading for
+this column is TT if -o is is specified and TTY otherwise.
+.TP 15
+\f3uid\f1
+The user ID number of the effective process owner.
+.TP 15
+\f3user\f1
+The login name of the effective process owner.
+.TP 15
+\f3vsz\f1
+The total size of the core image of the process in virtual memory, in kilobytes,
+including text, data, and stack space.
+.TP 15
+\f3wchan\f1
+The event for which the process is waiting or
+sleeping; if there is none, a hyphen (-) is
+displayed.
+.RE
+.SH AUTHOR
+Simon Anthony(santhony@me.com)
+.SH SEE ALSO
+.BR ps (1),
+.BR rtsched (1),
+.BR pstat (2),
+.BR rtsched (2)

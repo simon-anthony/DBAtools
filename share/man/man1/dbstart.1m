@@ -1,0 +1,97 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.\".fam H
+.fp 1 PR
+.fp 2 HI
+.fp 3 PB
+.fp 4 HBI
+.fp 5 CR
+.fp 6 CI
+.fp 7 CB
+.TH dbstart 1M "12 Aug 1998"
+.tr ~
+.SH NAME
+dbstart, dbshut \- start/stop database instances
+.SH SYNOPSIS
+.SS Startup
+.nf
+\f3dbstart\f1 [\f3-n\f1] [\f3-i\f1] \f2open_opts\f1 \f2mode_opts\f1 [\f3-e\f1] [\f2SID\f1...]
+
+  \f2open_opts\f1 = [-o \f3force\f1] [-o \f3restrict\f1] [-o \f3pfile\f1=\f2file\f1] [-o \f3quiet\f1]
+  \f2mode_opts\f1 = [-m \f3mount\f1|\f3open \f1[\f3read\f1 {\f3only\f1|\f3write\f1}]|\f3nomount\f1]
+.fi
+.SS Shutdown
+.nf
+\f3dbshut\f1 [\f3-n\f1] [\f3-i\f1] \f2mode_opts\f1 [\f3-e\f1] [\f2SID\f1...]
+
+  \f2mode_opts\f1 = [\f3-m immediate\f1|\f3abort\f1|\f3normal\f1|\f3transactional\f1 [\f3local\f1]]
+.fi
+.SH DESCRIPTION
+.IX "dbshut" "" "\fLdbstart\fP \(em print ORACLE_HOME"
+.P
+Issuing this command will start/stop all instances for databases listed
+in \f5oratab\f1. Refer to 
+.BR oratab (4)
+for a description of the action these programs take.
+.P
+Issuing either of these commands will start/stop all services for
+databases listed in \f5oratab\f1, entries must have the startup flag
+set to "Y" for them to be considered.
+.P
+Supplying a list of database \f2SID\f1s on the command line results in 
+only the services for the specified databases being started/stopped - an entry
+must exist in the \f5oratab\f1 for each specified database, however, the value
+of its startup flag is ignored. If the user is not root in this context,
+then the user invoking \f3dbstart\f1/\f3dbshut\f1 must be a member of the
+dba group for that database.
+.SH OPTIONS
+.TP
+\f3-n\f1
+Do not execute the actions just print a list of that which
+would have been run.
+.TP
+\f3-i\f1
+HP-UX only. Ignore the fact that the database may be under the control of
+an SGeRAC Toolkit package and execute the actions that would otherwise
+be performed.
+.TP
+\f3-m immediate\f1|\f3abort\f1|\f3normal\f1|\f3transactional\f1 [\f3local\f1]
+Specify the shutdown mode.
+.TP
+\f3-m \f3mount\f1|\f3open \f1[\f3read\f1 {\f3only\f1|\f3write\f1}]|\f3nomount\f1
+Specify the startup mode.
+.TP
+\f3-o \f2option\f1...
+Specify options for startup. The order is not significant since \f3dbstart\f1
+will sort them.
+.TP
+\f3-e\f1
+Use 
+.BR oraenv (1)
+to set the environment.
+.SH FILES
+.PD 0
+.TP 30
+\f5/var/opt/oracle/oratab\f1
+oratab file on System V.4
+.TP 30
+\f5/etc/oratab\f1
+oratab file on other systems
+.TP 30
+\f5$ORACLE_HOME/rdbms/lib/config.s\f1
+ss_dba_grp symbol defines dba group name for this ORACLE_HOME
+.TP 30
+\f5BASEDIR/share/lib/dbshut.sh\f1
+Shutdown action
+.TP 30
+\f5BASEDIR/share/lib/dbstart.sh\f1
+Startup action
+.PD
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR dbacmd (1M),
+.BR oraenv (1),
+.BR oratab (4)
+.SH NOTES
+This command is for local database instances only.

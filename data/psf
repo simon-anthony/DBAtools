@@ -1,0 +1,426 @@
+#ident $Id$
+# vim:syntax=psf:sw=4:ts=4:
+product
+	tag				TASdba
+	title			Oracle Database/Cluster Administration Tools
+	description		< data/desc.dbatools
+	revision		1.85
+	architecture	HP-UX_B.11_32/64
+	machine_type	ia64*
+	os_name			HP-UX
+	os_release		?.11.31
+	os_version		[A-Z]
+	is_locatable	false
+	is_patch		false
+	layout_version	1.0
+fileset
+	tag				commands
+	title			Commands (TAS DBA Tools)
+	description		< data/desc.commands
+	revision		1.48
+	checkinstall	scripts/checkinstall.commands
+	preremove		scripts/preremove.commands
+	postinstall		scripts/postinstall.commands
+	#
+	# bin
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/bin
+	directory bin=/opt/oracle/bin
+	file_permissions -m 0555 -o bin -g bin
+	file rwtop
+	file rwid
+	file -v ckyorn
+	file -v ckitem
+	file -v ckpath
+	file -v ckint
+	file crsstat
+	file -v adcpusr
+	file -v adenv
+	file -v getprb
+	file gethostnames
+	file -v adstatus
+	file -v adsessions
+	file -v adcustom
+	file -v ckrac
+	file -v sshping
+	file -v chkinv
+	file -v ctx
+	file -v getctx
+	file -v adcfg
+	file -v adctl
+	file -v adpre
+	file -v mkenv
+	file -v dbh
+	file -v ckres
+	file -v ckdba
+	file ckdba ckoper
+	file -v -m 0550 -g dba getappspass
+	file -v -m 0550 -g dba adpasswd
+	file -v -m 0555 sql
+	file pset
+	file realpath
+	file getgrname
+	file racp
+	file nbread
+	file racglogs
+	directory bin/adsvcctl=/opt/oracle/bin
+	file adsvcctl
+	directory bin/ps=/opt/oracle/bin
+	file ps
+	file pgrep
+	file ptree
+	directory bin/ctxvar=/opt/oracle/bin
+	file ctxvar
+	directory bin/lsp=/opt/oracle/bin
+	file_permissions -m 0550 -o bin -g dba
+	directory bin/lsp=/opt/oracle/bin
+	file lsp
+	#
+	# sbin
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/sbin
+	directory sbin=/opt/oracle/sbin
+	file_permissions -m 0555 -o bin -g bin
+	file -v dbstart
+	file oratab
+	file dbh
+	file adbatch
+	directory sbin/dbacmd=/opt/oracle/sbin
+	file dbacmd
+	directory sbin=/usr/contrib/bin
+	file -v cmmaintpkg
+	file -v cmvgpkg
+	directory sbin/cmmaintpkg.d=/usr/contrib/lib
+	file cmmaintpkg
+	file cmvgpkg
+	#
+	# lib
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/lib
+	directory lib=/opt/oracle/lib
+	directory lib/dbinfo=/opt/oracle/lib
+	file_permissions -m 0555 -o bin -g bin
+	file libdbinfo.sl
+	directory bin/ctxvar=/opt/oracle/lib
+	file_permissions -m 0555 -o bin -g bin
+	file liboavar.sl
+	#
+	# etc
+	#
+	file -t d -m 0775 -o bin -g dba /etc/opt/oracle
+	directory etc/oracle=/etc/opt/oracle
+	file_permissions -m 0444 -o bin -g bin
+	file rwpat.example
+	file -t d -m 0755 -o bin -g bin /etc/opt/oracle/skel
+	file -t d -m 0755 -o bin -g bin /etc/opt/crs/skel
+	directory etc/oracle/skel=/etc/opt/oracle/skel
+	file_permissions -m 0444 -o bin -g bin
+	file user.profile .profile
+	file user.shrc .shrc
+	file user.issue .issue
+	directory etc/crs/skel=/etc/opt/crs/skel
+	file_permissions -m 0444 -o bin -g bin
+	file user.profile .profile
+	file user.shrc .shrc
+	file user.issue .issue
+	#
+	# share
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share
+	directory share=/share
+	#
+	# share/lib
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib
+	directory share/lib/shell=/opt/oracle/share/lib
+	file_permissions -m 0644 -o bin -g bin
+	file -v -m 0444 adstart.sh
+	file -v -m 0444 dbstart.sh
+	file -v -m 0444 dbshut.sh
+	file -v -m 0444 lsnrstart.sh
+	#
+	# share/lib/ksh
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/ksh
+	directory share/lib/functions=/opt/oracle/share/lib/ksh
+	file_permissions -m 0644 -o bin -g bin
+	#file appspass
+	file oiconnect
+	file preserve
+	file xmlvar
+	file sqlprompt
+	file sg
+	file msg
+	file realpath
+	file setvars
+	file setdb
+	file setapps
+	file getoavars
+	file suboavars
+	file getsubopts
+	#
+	# share/lib/sql
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/sql
+	directory share/lib/sql=/opt/oracle/share/lib/sql
+	file_permissions -m 0644 -o bin -g bin
+	file -v -m 0444 login.sql
+	file -v -m 0444 ConcatStr.sql
+	file -m 0444 decrypt.plb
+	file -m 0444 get_fnd_pwd.plb
+	file -m 0444 get_pwd.plb
+	file -m 0444 createuser.plb
+	file -m 0444 changepassword.plb
+	file -m 0444 addresp.plb
+	file -m 0444 sessions.sql
+	#
+	# share/lib/rpt
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt
+	directory share/lib/rpt=/opt/oracle/share/lib/rpt
+	file_permissions -m 0644 -o bin -g bin
+	#
+	# share/lib/rpt/ps
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps
+	directory share/lib/rpt/ps=/opt/oracle/share/lib/rpt/ps
+	file_permissions -m 0644 -o bin -g bin
+	#
+	# share/lib/rpt/ps/aln
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/aln
+	directory share/lib/rpt/ps/aln=/opt/oracle/share/lib/rpt/ps/aln
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/apc
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/apc
+	directory share/lib/rpt/ps/apc=/opt/oracle/share/lib/rpt/ps/apc
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/cm
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/cm
+	directory share/lib/rpt/ps/cm=/opt/oracle/share/lib/rpt/ps/cm
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/db
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/db
+	directory share/lib/rpt/ps/db=/opt/oracle/share/lib/rpt/ps/db
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/dis
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/dis
+	directory share/lib/rpt/ps/dis=/opt/oracle/share/lib/rpt/ps/dis
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/dln
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/dln
+	directory share/lib/rpt/ps/dln=/opt/oracle/share/lib/rpt/ps/dln
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/fmc
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/fmc
+	directory share/lib/rpt/ps/fmc=/opt/oracle/share/lib/rpt/ps/fmc
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/fms
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/fms
+	directory share/lib/rpt/ps/fms=/opt/oracle/share/lib/rpt/ps/fms
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/frm
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/frm
+	directory share/lib/rpt/ps/frm=/opt/oracle/share/lib/rpt/ps/frm
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/opmn
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/opmn
+	directory share/lib/rpt/ps/opmn=/opt/oracle/share/lib/rpt/ps/opmn
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/rpt/ps/rep
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/ps/rep
+	directory share/lib/rpt/ps/rep=/opt/oracle/share/lib/rpt/ps/rep
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# /share/lib/rpt/tns
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/tns
+	directory share/lib/rpt/tns=/opt/oracle/share/lib/rpt/tns
+	file_permissions -m 0644 -o bin -g bin
+	#
+	# share/lib/rpt/tns/aln
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/tns/aln
+	directory share/lib/rpt/tns/aln=/opt/oracle/share/lib/rpt/tns/aln
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	file_permissions -m 0644 -o bin -g bin
+	#
+	# share/lib/rpt/tns/dln
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/rpt/tns/dln
+	directory share/lib/rpt/tns/dln=/opt/oracle/share/lib/rpt/tns/dln
+	file_permissions -m 0644 -o bin -g bin
+	file -m 0444 comment
+	file -m 0555 prog
+	#
+	# share/lib/templates/custom
+	#
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/templates
+	file -t d -m 0755 -o bin -g bin /opt/oracle/share/lib/templates/custom
+	directory share/lib/templates/custom=/opt/oracle/share/lib/templates/custom
+	file -m 0755 adstrtdb.sql
+	file -m 0755 addbctl.sh
+	file -m 0755 adstopdb.sql
+	#
+	# nlsdata
+	#
+	fileset
+		tag             nlsdata
+		title           NLS Data (TAS DBA)
+		description     < data/desc.nlsdata
+		revision        1.1
+		#
+		# share/nlsdata
+		#
+		directory share/nlsdata=/opt/oracle/share/nlsdata
+		file *
+	end
+	#
+	# man
+	#
+	fileset
+		tag				man
+		title			Manual Pages (TASdba)
+		description		< data/desc.man
+		revision		1.16
+		postinstall		scripts/postinstall.man
+		file_permissions -m 0755 -o bin -g bin
+		file -t d -m 0755 -o bin -g bin /opt/oracle/share/man
+		file -t d -m 0755 -o bin -g bin /opt/oracle/share/man/man1
+		directory share/man/man1=/opt/oracle/share/man/man1
+		file adenv.1
+		file adcpusr.1
+		file -v adps.1
+		file -v adstart.1m
+		file -v dbstart.1m
+		file -v adstatus.1
+		file -v adstop.1m
+		file -v dbshut.1m
+		file -v lsnrstart.1m
+		file -v lsnrstop.1m
+		file adsvcctl.1m
+		file adbatch.1m
+		file -v adtns.1
+		file ctx.1
+		file adcfg.1
+		file adctl.1
+		file ctxvar.1
+		file getctx.1
+		file getappspass.1
+		file adpasswd.1
+		file dbacmd.1m
+		file dbh.1
+		file racp.1
+		file ptree.1
+		file ps.1
+		file ckres.1
+		file adsessions.1
+		file getprb.1
+		file pset.1
+		file dbvers.1m
+		file oratab.1m
+		file rwid.1
+		file lsp.1
+		file -v rwtop.1
+		file ckdba.1
+		file -v ckoper.1
+		file nbread.1
+		directory share/man/man1=/usr/contrib/man/man1m
+		file cmmaintpkg.1m
+		file cmvgpkg.1m
+		file -t d -m 0755 -o bin -g bin /opt/oracle/share/man/man3
+		directory share/man/man3=/opt/oracle/share/man/man3
+		file dbinfo.3
+		file getoavar.3
+		file setoavar.3
+	end
+	#
+	# BBED
+	#
+	fileset
+		tag             bbed
+		title           BBED Libraries (TAS DBA)
+		description     < data/desc.bbed
+		revision        1.2
+		postinstall		scripts/postinstall.bbed
+		preremove		scripts/preremove.bbed
+		#
+		# bin
+		#
+		file -t d -m 0755 -o bin -g bin /opt/oracle/bin
+		directory bin=/opt/oracle/bin
+		file_permissions -m 0555 -o bin -g bin
+		file -v lnbbed
+		file -v mkbbed
+		#
+		# lib
+		#
+		file -t d -m 0755 -o bin -g bin /opt/oracle/lib/pa_risc
+		directory lib/pa_risc=/opt/oracle/lib/pa_risc
+		file_permissions -m 0444 -o bin -g bin
+		file sbbdpt.o
+		file ssbbded.o
+		file -t d -m 0755 -o bin -g bin /opt/oracle/lib/ia64
+		directory lib/ia64=/opt/oracle/lib/ia64
+		file_permissions -m 0444 -o bin -g bin
+		file sbbdpt.o
+		file ssbbded.o
+		#
+		# share/mesg
+		#
+		directory share/mesg=/opt/oracle/share/mesg
+		file -t d -m 0755 -o bin -g bin /opt/oracle/share/mesg
+		file_permissions -m 0444 -o bin -g bin
+		file bbedus.msb
+		file bbedus.msg
+		#
+		# share/man/man1
+		#
+		directory share/man/man1=/opt/oracle/share/man/man1
+		file mkbbed.1
+	end
+end

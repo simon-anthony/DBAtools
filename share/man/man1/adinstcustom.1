@@ -1,0 +1,57 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 CO
+.fp 6 CI
+.fp 7 CB
+.nr X
+.TH adinstcustom 1 "21 Apr 2007" ""
+.SH NAME
+adinstcustom \- instantiate custom AutoConfig templates
+.SH SYNOPSIS
+\f3adinstcustom\f1 [\f3-v \f2var\f3=\f2val\f1...] \f3-f \f2contextfile\f1 [\f2template\f1]
+.SH DESCRIPTION
+.IX "adinstcustom"
+.sp
+.P
+\f3adinstcustom\f1 
+instantiates custom AutoConfig templates for applications or database contexts
+from \f2contextfile\f1. 
+.P
+The type of templates to instantiate is determined by the value of
+\f3s_contexttype\f1.
+.P
+All files found in the directory for a \f3s_contexttype\f1:
+.IP Database
+.DS
+\f3%s_db_oh%\f5/appsutil/template/custom\f1
+.DE
+.IP APPL_TOP
+.DS
+\f3%s_adtop%\f5/admin/template/custom\f1
+.DE
+.P
+are instantiated (or only \f2template\f1 if specfied and it exists).
+.P
+The location to which the instantiated template is installed is taken from the
+respective driver file.
+.SH OPTIONS
+.TP
+\f3-v\f1 \f2var\f3=\f2val\f1
+The setting for the context variable named \f2var\f1 is superseded by
+\f2val\f1.
+.TP
+\f3-f\f1 \f2contextfile\f1
+The context file.
+.SH FILES
+.TP 30
+\f3%s_db_oh%\f5/appsutil/template/addbtmpl.drv\f1
+Database AutoConfig driver
+.TP 30
+\f3%s_adtop%\f5/admin/driver/adtmpl.drv\f1
+APPL_TOP AD AutoConfig driver
+.SH AUTHOR
+Simon Anthony(santhony@me.com)

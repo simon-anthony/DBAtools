@@ -1,0 +1,92 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH oratab 1M "16 Jun 1999"
+.tr ~
+.SH NAME
+oratab \- modify/inspect oratab file
+.SH SYNOPSIS
+\f3oratab\f1 [\f3-y\f1|\f3-n\f1|\f3-d\f1|\f3-p\f1|\f3-h \f2ORACLE_HOME\f1] \f2ORACLE_SID\f1 
+.P
+\f3oratab\f1 \f3-l\f1 [\f3-p\f1] [\f3-y\f1|\f3-n\f1]
+.SH DESCRIPTION
+.IX "oratab" "" "\fLoratab\fP \(em print ORACLE_HOME"
+\f3oratab\f1 provides a convenient way to manipulate the oratab file,
+.BR oratab (4),
+without need to use a text editor and a means to extract entries without
+recourse to writing a shell script 
+.BR awk (1)
+program or similar.
+.SS Edit/Print
+In the first form of the command
+\f2ORACLE_SID\f1 is the Oracle SID of the database upon which \f3oratab\f1 is
+to act. In the absence of any other
+option, \f3oratab\f1 
+merely confirms, or otherwise, the presence of \f2ORACLE_SID\f1 in the
+.BR oratab (4)
+file; exiting with status 0 if the entry is present, 1 otherwise. In addition
+if the \f3-p\f1 option is present the entry will be printed.
+.P
+Entries are
+modified, or created, with the \f3-h\f1 option. Other options are described
+below.
+.SS List
+The second form of the command (with the \f3-l\f1 option) lists the 
+\f2ORACLE_SID\f1s for valid entries found in the oratab file. With the
+\f3-p\f1 option the entire line is listed rather than just the \f2ORACLE_SID\f1.
+With the \f3-y\f1 option only those entries for which the start flag
+is set to "Y" are listed, and with the \f3-n\f1 option only those entries
+for which the start flag is "N" are listed.
+.SH OPTIONS
+.TP 
+\f3\-y\f1
+Set the startup flag to "Y". See
+.BR oratab (4).
+If \f3-l\f1 is present only consider
+entries where the start flag is "Y".
+.TP 
+\f3\-n\f1
+Set the startup flag to "N". See 
+.BR oratab (4).
+If \f3-l\f1 is present only consider
+entries where the start flag is "N".
+.TP
+\f3\-d\f1
+Delete the entry for this \f2ORACLE_SID\f1. If the entry was not present
+the return code is 1. If the entry was successfully removed 0 is returned.
+.TP 
+\f3\-p\f1
+Print the entry for this \f2ORACLE_SID\f1. Returns 0 if entry found, as well
+as the entry itself or 1 if the entry is not found. If \f3-l\f1 is present 
+print entire line rather than just the \f2ORACLE_SID\f1.
+.TP 
+\f3\-h \f2ORACLE_HOME\f1
+Change the \f2ORACLE_HOME\f1 for this entry, or add this entry if not present.
+.SH FILES
+.TP 30
+\f5/var/opt/oracle/oratab\f1
+oratab file on System V.4
+.TP 30
+\f5/etc/oratab\f1
+oratab file on other systems
+.PD
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR dbhome (1),
+.BR oraenv (1),
+.BR oratab (4)
+.SH NOTES
+.P
+This command is usually installed set-uid "oracle" and is only executable by the owner or 
+members of the "dba" group.
+.P
+\f3oratab\f1 locks the oratab file to prevent simultaneous update.
+.BR fcntl (2)
+locking is used.

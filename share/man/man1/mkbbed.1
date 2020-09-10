@@ -1,0 +1,48 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH mkbbed 1 "05 Jun 2001" ""
+.SH NAME
+mkbbed \- rebuild bbed utility
+.SH SYNOPSIS
+\f3mkbbed\f1
+[\f3-f\f1] [\f3-h \f2oracle_home\f1 | \f3-s \f2sid\f1 [\f3-o\f1]]
+
+.SH DESCRIPTION
+.IX "mkbbed"
+.P
+\f3mkbbed\f1 rebuilds the Block Browser and Editor in the subdirectory
+\f5rdbms/lib\f1 of the \f5ORACLE_HOME\f1 found in the environment or 
+set with any of the options (\f3-h\f1 or \f3-s\f1) described below.
+.P
+If the bbed tool is found to have unresolved library paths it will be rebuilt. 
+If it exists and there are no such unresolved paths it will not be rebuilt
+(unless the \f3-f\f1 option is specified.)
+.SH OPTIONS
+.TP 20
+\f3\-f\f1
+Force the rebuild of bbed. 
+.TP
+\f3\-h \f2oracle_home\f1
+Set the \f5ORACLE_HOME\f1 directly.
+.TP
+\f3\-s \f2sid\f1
+Use \f2sid\f1 to determine the \f5ORACLE_HOME\f1.
+.TP
+\f3-o\f1
+If using -s, use oratab rather than the database context file.
+.SH EXAMPLES
+Force rebuliding of bbed:
+.nf
+.sp
+\f5$ \f7ORACLE_HOME=/u01/oracle/product/11.2.0 mkbbed -f\f5
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)

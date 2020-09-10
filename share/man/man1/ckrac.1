@@ -1,0 +1,56 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH ckrac 1 "05 Jun 2001" ""
+.SH NAME
+ckrac \- check whether RAC enabled ORACLE_HOME
+.SH SYNOPSIS
+\f3ckrac\f1
+{\f3-h \f2oracle_home\f1] | \f3-s \f2sid\f1 [\f3-o\f1] }
+.SH DESCRIPTION
+.IX "ckrac"
+.P
+\f3ckrac\f1 tests the specified \f5ORACLE_HOME\f1 for the enabling of the
+RAC option. If enabled, "true" is printed to standard output, otherwise, "false"
+is printed.
+.SH OPTIONS
+.TP
+\f3\-h\f1 \f2oracle_home\f1
+Set the \f5ORACLE_HOME\f1 directly.
+.TP
+\f3\-s \f2sid\f1
+Use \f2sid\f1 to determine the \f5ORACLE_HOME\f1.
+.TP
+\f3\-o\f1
+If using \f3-s\f1, use oratab rather than the database context file.
+.SH RETURN VALUE
+\f3ckrac\f1 exits with one of the following values:
+.RS
+.TP
+\f32\f1
+Syntax error.
+.TP
+\f31\f1
+Not possible to determine the status of the given \f5ORACLE_HOME\f1.
+.TP
+\f30\f1
+Otherwise.
+.RE
+.SH EXAMPLES
+Display the status of the RAC option for the named database:
+.nf
+.sp
+\f5$ \f7ckrac -s PERF\f5
+true
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR ctx (1)

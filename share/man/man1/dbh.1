@@ -1,0 +1,54 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.nr X
+.TH dbh 1 "05 Jun 2001" ""
+.SH NAME
+dbh \- examine Oracle database file header
+.SH SYNOPSIS
+\f3dbh\f1
+[\f3-b \f2blocksize\f1] [\f3-o \f2oracle_home\f1] \f2file\f1...
+.SH DESCRIPTION
+.IX "dbh"
+.P
+\f3dbh\f1 prints information about the Oracle file or an error message if
+such information cannot be determined.
+.P
+Without the \f3-b\f1 option a simple 
+.BR od (1)
+scan of the file is analysed for a known format. However, this is only 
+reliable for 8K blocksize files.
+.P
+With the \f3-b\f1 option any supported blocksize can be specified. In this
+instance the Oracle "block browser and editor" (BBED) is invoked to 
+examine the physical structure of the header block, however, a valid
+\f5ORACLE_HOME\f1 must be set in the environment (possibly with appropriate
+settings for \f5SHLIB_PATH\f1 and/or \f5LD_LIBRARY_PATH\f1.)
+.P
+There is no need for \f5ORACLE_HOME\f1 etc. to be set if the \f3-b\f1 option
+is not used.
+.SH OPTIONS
+.TP
+\f3\-b \f2blocksize\f1
+Blocksize of the header block in 1K multiples.
+.TP
+\f3\-o \f2oracle_home\f1
+Set the \f5ORACLE_HOME\f1 and relevant values for \f5SHLIB_PATH\f1.
+.SH WARNINGS
+.P
+If BBED is not available in the \f5ORACLE_HOME\f1 \f3dbh\f1 builds it and exits.
+\f3dbh\f1 must then be run again.
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH FILES
+.TP 30
+\f5$ORACLE_HOME/rdbms/lib/bbed\f1
+block browser and editor 
+.SH SEE ALSO
+.BR make (1)

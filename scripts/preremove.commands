@@ -1,0 +1,67 @@
+#/bin/sh -
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+. /usr/lbin/sw/control_utils
+msg NOTE "Running preremove script"
+msg STAR "Product $PRODUCT"
+msg STAR "Fileset $FILESET"
+
+SW_LOCATION=/opt/oracle	# we set this since the package was formerly locatable
+
+msg NOTE "Removing links in \"$SW_LOCATION/bin\""
+cd ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/bin || exit 1
+rm -f adps
+rm -f adtns
+rm -f ps
+rm -f ptree
+rm -f pkill
+rm -f pgrep
+rm -f pmap
+[ -h ckdate ]  && rm -f ckdate
+[ -h ckgid ]   && rm -f ckgid
+[ -h ckint ]   && rm -f ckint
+[ -h ckitem ]  && rm -f ckitem
+[ -h ckkeywd ] && rm -f ckkeywd
+[ -h ckpath ]  && rm -f ckpath
+[ -h ckrange ] && rm -f ckrange
+[ -h ckstr ]   && rm -f ckstr
+[ -h cktime ]  && rm -f cktime
+[ -h ckuid ]   && rm -f ckuid
+[ -h ckyorn ]  && rm -f ckyorn
+
+msg NOTE "Removing links in \"$SW_LOCATION/sbin\""
+cd ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/sbin || exit 1
+rm -f dbvers
+rm -f dbid
+rm -f adstop
+rm -f adstart
+rm -f dbshut
+rm -f lsnrstart
+rm -f lsnrstop
+
+msg NOTE "Removing links in \"$SW_LOCATIONshare/lib\""
+cd ${SW_ROOT_DIRECTORY}/${SW_LOCATION}/share/lib || exit 1
+rm -f adstop.sh
+rm -f lsnrstop.sh
+
+msg NOTE "Removing Security Attributes"
+setfilexsec -d /opt/oracle/bin/lsp
+
+if /usr/sbin/swlist T1907BA >/dev/null 2>&1
+then
+	:
+else
+	msg NOTE "Serviceguard Extension for RAC not installed"
+	exit 0
+fi
+
+msg NOTE "Removing Toolkit Role"
+cmdprivadm delete cmd=/usr/contrib/lib/cmvgpkg
+cmdprivadm delete cmd=/usr/contrib/lib/cmmaintpkg
+revoke "&dba" Toolkit
+revoke oracrs Toolkit
+authadm revoke role=Toolkit
+authadm delete hpux.sgerac.maint
+roleadm delete Toolkit
+
+exit 0

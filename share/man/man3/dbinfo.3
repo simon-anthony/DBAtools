@@ -1,0 +1,50 @@
+.\" %W%
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH dbinfo 3 "16 Jun 1999"
+.tr ~
+.SH NAME
+dbinfo() \- get database information
+.SH SYNOPSIS
+.nf
+\f5cc [ \f2flag\f5 ... ] \f2file\f5 ... -ldbinfo [ \f2library\f1 ... ]
+\f5#include BASEDIR/include/dbinfo.h\f1 
+.sp
+\f7struct \f5cmdstr *dbinfo\f7(struct \f5cmdstr \f7*\f5buf\f7, const char *\f5oracle_home\f7);\f1
+.fi
+.SH DESCRIPTION
+.IX "dbinfo" "" "\fLdbinfo\fP \(em print ORACLE_HOME"
+The dbinfo function populates a \f5cmdstr\f1 structure with information
+about the database defined by \f5oracle_home\f1 or, if
+this is NULL, the value of \f5ORACLE_HOME\f1 taken from the environment.
+.P
+The user must supply the storage buffer \f5buf\f7.
+.SH RETURN VALUES
+Dbinfo entries are represented by the \f5struct cmdstr\f1 structure defined in
+\f5BASEDIR/include/dbinfo.h\f1:
+.nf
+.sp
+.ft 5
+struct cmdstr {
+    char    path[PATH_MAX];      /* command for startup/shutdown */
+    char    *oracle_sid;
+    char    *oracle_home;
+    char    *version;            /* database version */
+    char    *connect;            /* database user and connect string */
+    uid_t   uid;                 /* user ID of ORACLE_HOME owner */
+    gid_t   gid;                 /* group ID of ORACLE_HOME owner */
+    char    *name;               /* name of ORACLE_HOME owner */
+    char    *dir;                /* home directory of owner */
+    char    *args[ARG_MAX];      /* args for batch command */
+};
+.ft 1
+.fi
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR dbacmd (1M)

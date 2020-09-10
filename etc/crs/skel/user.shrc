@@ -1,0 +1,49 @@
+#ident $Header$
+# vim:syntax=sh:sw=4:ts=4:
+
+# The variables SG_ORACLE_SID and SG_TWO_TASK can be set to be the
+# colour of the ORACLE_SID and TWO_TASK variables respectively as they
+# appear in the PS1 string.
+#
+# The syntax is:
+#
+#     <foreground colour>[:<background colour>[:<attribute]]
+#
+# Valid colours are those supported by the VT colour system. That is:
+# black, red, green, yellow, blue, magenta, cyan, white
+#
+# Specifiying an invalid colour will result in the colour black being used.
+# Specifiying an invalid attribute will result in none being used.
+prefix="/opt/oracle"
+SG_ATTR=ON
+SG_TWO_TASK=red:black:bold
+SG_ORACLE_SID=green:black:off
+export SG_ATTR SG_TWO_TASK SG_ORACLE_SID
+SG_VG=white        # Colour/attribute of the volume group.
+SG_LV=green        # Colour/attribute of the logical volumes.
+SG_PV=cyan         # Colour/attribute of the physical volumes.
+SG_MIRRORS=yellow  # Colour/attribute of mirrored logical volumes.
+SG_STRIPES=red     # Colour/attribute of striped logical volumes.
+SG_ALTERNATE=blue  # Colour/attribute of the alternate link.
+export SG_VG SG_LV SG_PV SG_MIRRORS SG_STRIPES SG_ALTERNATE
+
+unalias cp
+
+case `/bin/basename $SHELL` in
+ksh*|sh) FPATH=$HOME/share/lib/functions:$prefix/share/lib/functions export FPATH
+	;;
+bash)	for file in $prefix/share/lib/functions/*
+		do
+			. $file
+		done 
+	;;
+esac
+
+EDITOR=vim
+export EDITOR FCEDIT=$EDITOR VISUAL=$EDITOR SVNEDITOR=$EDITOR
+set -o vi
+
+[ -x /usr/bin/vim -o -x /usr/local/bin/vim -o -x $HOME/bin/vim ] && \
+	alias vi=vim view='vim -M'
+
+alias no_tmout="unset TMOUT; exec \$SHELL"

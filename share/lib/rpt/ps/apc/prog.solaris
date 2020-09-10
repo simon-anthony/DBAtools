@@ -1,0 +1,193 @@
+#!/bin/sh -
+#ident $Header$
+
+PATH=/bin:/usr/bin export PATH
+
+prog=`basename \`dirname $0\``
+usage="[-p] [-u|-b]"
+
+ps="ps -fp"
+cut=48
+
+while getopts pub opt 2>&-
+do
+	case $opt in
+	p)	pflg=y				# use ps(1) rather than PID file
+		;;
+	u|b)
+		if [ -x /usr/ucb/ps ]
+		then
+			ps="/usr/ucb/ps -ww"
+			cut=25
+			uflg=y			# use ps(1B)
+		fi
+		;;
+	\?)	errflg=y
+	esac
+done
+shift `expr $OPTIND - 1`
+
+[ $errflg ] && { echo usage: $prog $usage >&2; exit 2; }
+[ $UTIL_DIR ] || { echo $prog: UTIL_DIR not set >&2; exit 1; }
+
+script=ad${prog}ctl
+
+if [ ! -f $UTIL_DIR/$script.sh ]
+then
+	echo Cannot locate script \'$script\'.sh for \"$ORACLE_SID\"
+	exit 1
+fi
+# xmlvar: return value of xml variable from context file
+#   $1 - variable name  $2 - XML file
+xmlvar()
+{
+	[ -r "$2" ] || { echo "xmlvar: cannot open $2" >&2; return 1; }
+	sed -n 's;.*[    ]\{1,\}oa_var="'$1'"[^>]*>\(.*\)<.*;\1;p' $2
+}
+
+APACHE_TOP=`sed -n '/ORAENV_FILE=/ {
+		s;ORAENV_FILE="\(.*\)/[^/]*;\1/Apache;p
+		q
+	}' $UTIL_DIR/$script.sh 2>&-`
+[ $APACHE_TOP ] || {
+	echo WARNING: cannot determine APACHE_TOP. Check $script.sh.
+	exit
+}
+export APACHE_TOP
+
+conf_files=`sed -n 's;^[ 	]*APACHE.*CONF=\([^ ]*\).*;\1;p' $UTIL_DIR/$script.sh`
+[ "$conf_files" ] || conf_files=`sed -n 's;.*apachectl.*-f[	 ]*\([^	 ]\{1,\}\.conf\).*;\1;p' \
+$UTIL_DIR/$script.sh | sort -u`
+
+[ "$conf_files" ] || conf_files=$APACHE_TOP/Apache/conf/httpd.conf
+
+# Just check whether apachectl start httpd or httpds
+#
+#eval `grep -s HTTPD=/ $APACHE_TOP/Apache/bin/apachectl`
+#if [ $HTTPD ]
+#then
+#	httpd=`basename $HTTPD`	
+#	bin_dir=`dirname $HTTPD`
+#	if [ $bin_dir != $APACHE_TOP/Apache/bin ]
+#	then
+#		echo WARNING: Apache bin directory is not in APACHE_TOP
+#	fi
+#else
+#	echo WARNING: cannot determine HTTPD. Assuming httpd.
+	#httpd=httpd
+#fi
+
+for conf in $conf_files
+do
+	name=`expr "\`basename $conf .conf\`" : '\(.*\)_*.*' | 
+		tr '[a-z]' '[A-Z]'`
+	ports=
+	port=`sed -n 's;^[ 	]*Listen[ 	]\{1,\}\([0-9]\{1,\}\).*;'$name'_PORT=\1;p' $conf;
+		sed -n 's;^[ 	]*Listen[ 	]\{1,\}.*:\([0-9]\{1,\}\).*;'$name'_PORT=\1;p' $conf;
+		sed -n '/^[ 	]*<IfDefine SSL>/,/^[ 	]*<\/IfDefine>/ {
+			s;^[^#]\{0,1\}[ 	]*Listen[ 	]\{1,\}\([^ ]\{1,\}\);'$name'_PORT=\1;p
+			s;^[^#]\{0,1\}[ 	]*Listen[ 	]\{1,\}.*:\([^ ]\{1,\}\);'$name'_PORT=\1;p
+			}' $conf`
+	[ "$port" ] || continue
+	[ "$ports" ] && ports="$ports $port" || ports="$port"
+
+	echo Configuration file: $conf
+
+	if [ `basename $conf .conf` = httpd ]
+	then
+		includes=`sed -n  's;^[	 ]*include[	 ]\{1,\}"\(.*\)".*;\1;p' $conf`
+
+		for include in $includes 
+		do
+			name=`expr "\`basename $include .conf\`" : '\(.*\)_*.*' | 
+				tr '[a-z]' '[A-Z]'`
+			if [ "$name" = JSERV ]
+			then
+				include=`sed -n \
+					'/<IfDefine !RESTRICT>/,/<\/IfDefine>/ {
+						s;^[ 	]*ApJServProperties[ 	]\{1,\}\(.*\);\1;p
+					 }' \
+					$include`
+				port=`sed -n 's;^port=\([-	 0-9]\{1,\}\).*;'$name'_PORT=\1;p' \
+					$include`
+			else
+				port=`sed -n \
+					's;^[ 	]*Listen[	 ]\{1,\}\([0-9]\{1,\}\).*;'$name'_PORT=\1;p' \
+					$include`
+			fi
+			[ "$port" ] && ports="$ports $port"
+		done
+	fi
+
+	echo Configured ports: `echo $ports | sed 's;=\([^ 	]\{1,\}\);='$CAP'\1'$CAPOFF';g'`
+
+	set -a
+	eval $ports
+	set +a
+
+	echo Processes:
+	count=0
+
+	pidfile=`sed -n 's;^PidFile[ 	]\{1,\}\(.*\);\1;p' $conf`
+
+	if [ -n "$pidfile" -a ! "$pflg" -a -r "$pidfile" ]
+	then
+		pids=`cat -s $pidfile`
+	else
+		if [ "$ID" ]
+		then
+			id=$ID
+		else
+			id=`expr "\`id\`" : '[^(]\{1,\}(\([^ ]\{1,\}\))'` 
+		fi
+		#pids=`/usr/ucb/ps -xww | awk '/Apache\/bin\/httpd.*\`basename $conf\`'/ { print $1 }'`
+		pids=`pgrep -fu $id | awk '/Apache\/bin\/httpd.*\`basename $conf\`/ { print $1 }'`
+	fi
+
+	for pid in $pids
+	do
+		count=`expr $count + 1`
+
+		if [ $pflg ]
+		then
+			if [ $count -gt 1 ]
+			then
+				$ps $pid | sed '1d'
+			else
+				$ps $pid
+			fi
+			continue
+		fi
+
+		if [ $uflg ]
+		then
+			argv=`$ps $pid 2>&- | sed 1d | cut -c$cut-`
+		else
+			unset argv
+		fi
+
+		/usr/proc/bin/ptree $pid | nawk '
+			++count == 1 && $1 != '$pid' {
+				ppid++
+				next
+			}
+			{
+				if (ppid)
+					sub(/^  /, "")
+
+				if (length("'"$argv"'")) {	# replace the ps listing with ps(1B)
+					match($0, /^[ \t]*[0-9]+[ \t]+/)
+
+					if (count > 1) {	# child - argv must change
+						system("'"$ps"' " $1 " | sed 1d | cut -c'$cut'- >/tmp/'$$'")
+						getline child < "/tmp/'$$'"
+						$0 = sprintf("%s%s", substr($0, 1, RLENGTH), child)
+						close "/tmp/'$$'"
+					} else
+						$0 = sprintf("%s%s", substr($0, 1, RLENGTH), "'"$argv"'")
+				}
+
+				print
+			}'
+	done
+done

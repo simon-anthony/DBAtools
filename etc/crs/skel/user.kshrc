@@ -1,0 +1,6 @@
+#ident $Header$
+VISUAL=vi
+FCEDIT=$VISUAL EDITOR=$VISUAL
+export EDITOR VISUAL FCEDIT
+
+unalias cp

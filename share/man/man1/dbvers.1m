@@ -1,0 +1,39 @@
+.\" $Header$
+.\" vim:ts=4:sw=4:syntax=nroff
+.fp 1 R
+.fp 2 I
+.fp 3 B
+.fp 4 BI
+.fp 5 R
+.fp 6 I
+.fp 7 B
+.TH dbvers 1M "12 Aug 1998"
+.tr ~
+.SH NAME
+dbvers \- return version of current ORACLE_HOME
+.SH SYNOPSIS
+\f3dbvers\f1 [\f3-\f2n\f1] [\f3-d\f1] 
+.SH DESCRIPTION
+.IX "dbvers" "" "\fLdbvers\fP \(em print ORACLE_HOME"
+\f3dbvers\f1 will simply print the version extracted from running the startup
+command for this ORACLE_HOME. How it does this is described fully in 
+.BR dbacmd (1M).
+.TP
+\f3-\f2n\f1
+Version depth. Print version/release to this level of precision. Supported
+values of \f2n\f1 are \f31\f1, \f32\f1, \f33\f1 or \f34\f1. The default
+value is \f34\f1.
+.TP
+\f3-d\f1
+Debug mode. Print to stderr of detailed actions.
+.PD
+.SH AUTHOR
+Simon Anthony (santhony@me.com)
+.SH SEE ALSO
+.BR dbacmd (1M)
+.SH EXAMPLES
+.nf
+.sp
+\f5$ \f7ORACLE_HOME=/opt/oracle/product dbvers -3\f5
+\f59.2.0\f1
+.fi
