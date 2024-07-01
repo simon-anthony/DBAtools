@@ -1,6 +1,6 @@
 #ident $Header$
 
-PATH=$HOME/bin:/opt/freeware/bin:/usr/bin:/opt/IBM/xlC/13.1.3/bin export PATH
+#PATH=$HOME/bin:/opt/freeware/bin:/usr/bin:/opt/IBM/xlC/13.1.3/bin export PATH
 
 [ -r ~/.rpmmacros ] ||  { echo "ERROR: cannot read ~/.rpmmacros" >&2; exit 1; }
 
@@ -24,8 +24,8 @@ done
 
 autoreconf --install || exit $?
 ./configure \
-	--with-oracle-home=/apps/DEV1/PRN/db/tech_st/12.1.0.2 \
-	CC=xlc CFLAGS= LDFLAGS=-brtl 
+	--with-oracle-home=/opt/oracle/product/23ai/dbhomeFree \
+	CC=gcc CFLAGS= LDFLAGS=
 
 for spec in data/*.spec
 do

@@ -116,7 +116,7 @@ static int match_ss(char *s, Variable **);
 #else
 static int match();
 static int match_r();
-static int match_s()'
+static int match_s();
 static char *curval();
 static int match_ss();
 #endif

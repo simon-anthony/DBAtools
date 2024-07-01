@@ -35,8 +35,8 @@ OBJECT_MODE=64 export OBJECT_MODE # for nm
 	--localstatedir=/var/%{_prefix} \
 	--mandir=%{_prefix}/share/man \
 	--with-aix-soname=aix \
-	--with-oracle-home=/apps/DEV1/PRN/db/tech_st/12.1.0.2 \
-	CC=xlc CFLAGS= LDFLAGS=-brtl 
+	--with-oracle-home=/opt/oracle/product/23ai/dbhomeFree \
+	CC= CFLAGS= LDFLAGS=
 make
 
 %install

@@ -7,6 +7,10 @@
 #ifdef _HPUX_SOURCE
 static char *svnid = "$Header$";
 #endif
+//#include <unistd.h>
+//#include <limits.h>
+#undef _LINUX_LIMITS_H
+#include <linux/limits.h>
 
 struct cmdstr {
 	char	path[PATH_MAX];				/* command for startup/shutdown */

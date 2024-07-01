@@ -5,7 +5,7 @@ AC_PROG_AWK([gawk] nawk awk)
 AC_MSG_CHECKING([for an ORACLE_HOME])
 AC_DEFUN([SET_ORACLE_HOME],
 	[ if oratab=`{ ls /var/opt/oracle/oratab || ls /etc/oratab; } 2>&-`; then
-		oracle_home="`$AWK -F: '@S|@1 ~ /^@<:@A-Za-z@:>@/ { print @S|@2 } $oratab`";
+		oracle_home="`$AWK -F: '@S|@1 ~ /^@<:@A-Za-z@:>@/ { print @S|@2 }' @S|@oratab`";
 		if [ test -x $oracle_home/bin/oracle ]; then
 			AC_MSG_RESULT([$oracle_home]);
 		else
@@ -16,6 +16,8 @@ AC_DEFUN([SET_ORACLE_HOME],
 		AC_MSG_RESULT([no]);
 		AC_MSG_ERROR([no ORACLE_HOME found]);
 	fi ])
+SET_ORACLE_HOME
+AC_SUBST([ORACLE_HOME], $oracle_home)
 AC_PROG_CC([xlc cc gcc cl])
 AC_PROG_YACC
 AC_PROG_LEX
@@ -73,8 +75,8 @@ AC_ARG_WITH([oracle_home],
 		AC_MSG_FAILURE([invalid ORACLE_HOME specified])
 	)
 )
-AS_IF([test -f $ORACLE_HOME/lib/libclntst12.a], 
-	AC_MSG_NOTICE([libclntst.a found]),
-	AC_MSG_FAILURE([run $ORACLE_HOME/bin/genclntst])
+AS_IF([test -f $oracle_home/lib/libclntsh.so], 
+	AC_MSG_NOTICE([libclntsh found]),
+	AC_MSG_FAILURE([$oracle_home/bin/genclntsh not found])
 )
 AC_OUTPUT

@@ -21,3 +21,14 @@ lt~obsolete.m4
 ltoptions.m4
 ltsugar.m4
 ltversion.m4
+.deps
+depcomp
+ylwrap
+lexer.c
+parser.c
+parser.h
+.libs
+*.o
+*.lo
+.dirstamp
+*.la

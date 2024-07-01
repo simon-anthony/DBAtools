@@ -1,7 +1,10 @@
 # $Header$
 
+if HPUX
 bin_PROGRAMS = pgrep
+endif
 if AIX
+bin_PROGRAMS = pgrep
 bin_PROGRAMS += ptree
 endif
 
