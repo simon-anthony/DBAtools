@@ -1,4 +1,5 @@
-#ident $Header: DBAtools/trunk/share/lib/functions/setoavars.sh 187 2017-11-16 15:25:59Z xanthos $
+#!/usr/bin/ksh
+
 # vim:syntax=sh:ts=4:sw=4:
 ################################################################################
 # setvars: set context variables from supplied context file name

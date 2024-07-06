@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/usr/bin/sh -
 #ident $Header$
 # vim:syntax=sh:sw=4:ts=4:
 # Provided in case you have 10g+ which does not include bbed libs

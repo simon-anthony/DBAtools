@@ -1,7 +1,8 @@
-# $Header: DBAtools/trunk/data/dbatools-2.6-1.spec 188 2017-11-16 16:16:24Z xanthos $
-# vim:syntax=conf:filetype=spec:
+# $Header$
+# vim:syntax=spec:filetype=spec:
 %define _prefix /opt/oracle
 %define _sysconfdir /etc/%{_prefix}
+%define _unpackaged_files_terminate_build 0
 
 Prefix:			/opt/oracle
 
@@ -14,6 +15,7 @@ License:		GPL
 Packager:		Simon Anthony
 Source0:		%{name}-%{version}.tar.gz
 BuildRoot:		%_topdir/BUILDROOT/%{name}-%{version}-%{release}-build
+Requires:		ksh
 
 %description
 DBAtools is a collection of programs designed to ease the administration of
@@ -40,11 +42,11 @@ OBJECT_MODE=64 export OBJECT_MODE # for nm
 make
 
 %install
-[ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
+[ ${RPM_BUILD_ROOT} != "/" ] && echo rm -rf ${RPM_BUILD_ROOT}
 make DESTDIR=${RPM_BUILD_ROOT} install
 
 %clean
-[ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
+[ ${RPM_BUILD_ROOT} != "/" ] && echo rm -rf ${RPM_BUILD_ROOT}
 
 %post
 [ -f %{_bindir}/dos2ux ] && ln -f %{_bindir}/dos2ux %{_bindir}/ux2dos
@@ -105,6 +107,7 @@ done
 
 %{_libdir}/*.so*
 %{_libdir}/*.a*
+%exclude %{_libdir}/*.la
 
 %attr(755,bin,dba) %{_datadir}/lib/*.sh
 %dir %attr(775,bin,dba) %{_datadir}/lib/functions
@@ -113,6 +116,35 @@ done
 %attr(755,bin,dba) %{_datadir}/lib/sql/*
 %dir %attr(775,bin,dba) %{_datadir}/nlsdata
 %attr(755,bin,dba) %{_datadir}/nlsdata/*.nlb
+
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/aln
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/aln/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/apc
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/apc/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/cm
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/cm/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/db
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/db/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/dln
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/dln/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/fmc
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/fmc/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/fms
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/fms/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/frm
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/frm/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/opmn
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/opmn/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/ps/rep
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/ps/rep/*
+
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/tns
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/tns/aln
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/tns/aln/*
+%dir %attr(775,bin,dba) %{_datadir}/lib/rpt/tns/dln
+%attr(644,bin,dba)      %{_datadir}/lib/rpt/tns/dln/*
 
 %{_mandir}/man?/*
 

@@ -77,7 +77,11 @@ if AIX
 endif
 
 pset_SOURCES = pset.c
+if LINUX
+pset_CFLAGS = -lcurses
+else
 pset_CFLAGS = 
+endif
 pset_LDFLAGS = 
 if AIX
  pset_CFLAGS += $(xlc64_CFLAGS)

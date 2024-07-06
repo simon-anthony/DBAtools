@@ -33,6 +33,10 @@ static char *svnid = "$Header$";
 #include <sys/wait.h>
 #include <errno.h>
 #include <regex.h>
+#undef _LINUX_LIMITS_H
+#ifdef linux
+#include <linux/limits.h>
+#endif
 
 #define	USAGE "[-nigraf] [-m <mode>] [-o <opt>...] [[-s]-d <driver>[.drv]...] [-p <dir>] [-w <n>]\n\nwhere <mode> = apply|preinstall"
 

@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/usr/bin/sh -
 #ident $Header$
 ################################################################################
 # adstatus: display status of e-Business Suite services

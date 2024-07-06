@@ -1,5 +1,5 @@
 changequote([+, +])dnl		# shell quotation marks need protecting
-#ident $Header$
+#!/usr/bin/ksh 
 # vim:syntax=sh:ts=4:sw=4:
 ################################################################################
 #

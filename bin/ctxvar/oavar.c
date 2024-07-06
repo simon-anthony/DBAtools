@@ -13,6 +13,9 @@ static char *svnid_oa = "$Header$";
 #include <stdlib.h>
 #include <unistd.h>
 #include "ctx.h"
+#ifdef linux
+#include <signal.h>
+#endif
 
 static int vflg = 0, pflg = 0, eflg = 0, iflg = 0, fflg = 0, errflg = 0;
 

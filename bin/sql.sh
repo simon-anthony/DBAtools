@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/usr/bin/sh -
 #ident $Header$
 # vim:syntax=sh:sw=4:ts=4:
 ORACLE_PATH=DATADIR/lib/sql:$ORACLE_PATH

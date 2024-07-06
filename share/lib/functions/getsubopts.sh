@@ -1,5 +1,8 @@
-# $Header$
-# getsubopts
+#!/usr/bin/ksh
+
+# vim:syntax=sh:ts=4:sw=4:
+################################################################################
+# getsubopts:
 # Function is similar to getsubopt(3C), argument order differs. Note that
 # arguments 2, 3 and 4 are the *names* of variables to which values will be
 # assigned (or overridden).
@@ -7,6 +10,23 @@
 #  $2 name of shell variable that will have assigned the current option name
 #  $3 name of shell variable that will have assigned the current option value
 #  $4 name of shell variable that will have assigned the arguments to process
+#
+################################################################################
+# Copyright (C) 2008 Simon Anthony
+#
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License or, (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not see <http://www.gnu.org/licenses/>>
+#
 getsubopts()
 {
 	# Example:

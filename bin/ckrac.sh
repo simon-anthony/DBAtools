@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/usr/bin/sh -
 #ident $Header$
 # vim:syntax=sh:sw=4:ts=4:
 # Copyright (C) 2008 Simon Anthony

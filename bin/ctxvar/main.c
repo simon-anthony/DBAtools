@@ -15,6 +15,10 @@ static char *svnid_main = "$Header$";
 #include <locale.h>
 #include <errno.h>
 #include "ctx.h"
+#ifdef linux
+#include <signal.h>
+#endif
+
 
 static void usage(char *s)
 {

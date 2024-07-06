@@ -1,7 +1,8 @@
-#ident $Header: DBAtools/trunk/share/lib/functions/sqlprompt.sh 133 2017-08-24 16:43:46Z xanthos $
+#!/usr/bin/ksh
+
 # vim:syntax=sh:sw=4:ts=4:
 ################################################################################
-# sqlprompt: Print SQL*Plus commands to set the prompt
+# sqlprompt: print SQL*Plus commands to set the prompt
 #
 ################################################################################
 # Copyright (C) 2008 Simon Anthony

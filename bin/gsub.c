@@ -28,6 +28,10 @@ static char *svnid = "$Header$";
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#undef _LINUX_LIMITS_H
+#ifdef linux
+#include <linux/limits.h>
+#endif
 
 static char buf[ARG_MAX];
 

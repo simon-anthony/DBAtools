@@ -24,6 +24,11 @@ static char *svnid = "$Header$";
 #if defined(_AIX) || defined(__linux__)
 #include <sys/param.h>
 #endif
+#undef _LINUX_LIMITS_H
+#ifdef linux
+#include <linux/limits.h>
+#endif
+
 
 extern char *prog;
 

@@ -1,4 +1,4 @@
-#!/bin/ksh -
+#!/usr/bin/ksh -
 # $Header$
 : ${ORACLE_HOME:=/opt/oracle/product/grid}
 LD_LIBRARY_PATH=$ORACLE_HOME/lib

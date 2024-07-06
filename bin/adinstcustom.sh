@@ -1,4 +1,4 @@
-#!/bin/ksh -
+#!/usr/bin/ksh -
 #ident $Header$
 ################################################################################
 # Instantiate custom AutoConfig templates given a context file

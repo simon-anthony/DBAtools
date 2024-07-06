@@ -1,4 +1,5 @@
-#ident $Header$
+#!/usr/bin/ksh
+
 # vim:syntax=sh:ts=4:sw=4:
 ################################################################################
 # msg: save or restore stdout/stderr or print message

@@ -35,5 +35,5 @@ do
 
 	mv ${spec%-[]0-9].spec}.tar.gz $topdir/SOURCES; cp -f data/$spec $topdir/SPECS
 
-	rpmbuild -bb data/$spec || exit $?
+	rpmbuild -bb -D 'debug_package %{nil}' --nodebuginfo data/$spec || exit $?
 done

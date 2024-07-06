@@ -19,6 +19,11 @@ static char *svnid = "$Header$";
 #define USAGE "[-t <timeout>]"
 #define MS 1000
 
+#ifdef linux
+#define POLLNORM POLLRDNORM
+#include <string.h>
+#endif
+
 char *prog;
 
 int

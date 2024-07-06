@@ -17,6 +17,9 @@ static char *svnid = "$Header$";
 #include <stdlib.h>
 #include <errno.h>
 #include <libgen.h>
+#ifdef linux
+extern size_t bufsplit(char *, size_t, char **);
+#endif
 
 #define ITOA(i) i+48
 #define SPACE	32		/* ASCII space    (decimal) */

@@ -96,8 +96,8 @@ ctxfound(void)
 	return found;
 }
 
-extern int yyerror();
-extern int yylex();
+//extern int yyerror();
+//extern int yylex();
 /*extern int yydebug = 1;*/
 
 #ifdef YYBISON

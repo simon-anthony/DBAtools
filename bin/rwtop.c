@@ -8,6 +8,7 @@
 static char *svnid = "$Header$";
 #endif
 #include <stdio.h>
+#include <unistd.h>
 #include <libgen.h>
 #include <ctype.h>
 #include <stdlib.h>

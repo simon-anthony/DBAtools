@@ -1,8 +1,9 @@
-#ident $Header: DBAtools/trunk/share/lib/functions/sg.sh 114 2017-08-22 09:08:43Z xanthos $
+#!/usr/bin/ksh
+
 # vim:syntax=sh:sw=4:ts=4:
 ################################################################################
-# sg: print vt220 graphics modes 
-# Used by sqlprompt()
+# sg: print vt220 graphics modes, used by sqlprompt()
+#
 ################################################################################
 # Copyright (C) 2008 Simon Anthony
 # 

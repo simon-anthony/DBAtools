@@ -32,3 +32,4 @@ parser.h
 *.lo
 .dirstamp
 *.la
+*.swp
